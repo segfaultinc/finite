@@ -26,6 +26,11 @@
             "SegfaultInc\\Finite\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "SegfaultInc\\Finite\\\\Test\\": "tests"
+        }
+    },
     "scripts": {
         "test": "vendor/bin/phpunit"
     },

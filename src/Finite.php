@@ -4,20 +4,28 @@ namespace SegfaultInc\Finite;
 
 class Finite
 {
-    private $states = [];
+    /** @var StatesCollection */
+    private $states;
     private $transitions = [];
     private $hooks = true;
 
+    public function __construct()
+    {
+        $this->states = new StatesCollection();
+    }
+
     public function setStates(array $states): self
     {
-        $this->states = Validator::states($states);
+        $this->states = Validator::states(
+            new StatesCollection($states)
+        );
 
         return $this;
     }
 
     public function getStates(): StatesCollection
     {
-        return new StatesCollection($this->states);
+        return $this->states;
     }
 
     public function setTransitions(array $transitions): self

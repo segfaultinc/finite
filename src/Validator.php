@@ -8,9 +8,9 @@ use SegfaultInc\Finite\Exceptions\SubjectInInvalidStateException;
 
 class Validator
 {
-    public static function states(array $states): array
+    public static function states(StatesCollection $states): StatesCollection
     {
-        $initial = Collection::make($states)
+        $initial = $states
             ->filter(function (State $state) {
                 return $state->type == State::INITIAL;
             });
@@ -23,7 +23,7 @@ class Validator
             throw ConfigurationException::multipleInitialStates($initial);
         }
 
-        $duplicates = Collection::make($states)
+        $states
             ->groupBy(function (State $state) {
                 return $state->key;
             })
@@ -53,9 +53,9 @@ class Validator
         return $transitions;
     }
 
-    public static function subject(array $states, array $transitions, Subject $subject, string $input): void
+    public static function subject(StatesCollection $states, array $transitions, Subject $subject, string $input): void
     {
-        Collection::make($states)
+        $states
             ->filter(function (State $state) use ($subject) {
                 return $state->key == $subject->getFiniteState();
             })

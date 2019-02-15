@@ -25,12 +25,10 @@ class Validator
         }
 
         $states
-            ->groupBy(function (State $state) {
+            ->map(function (State $state) {
                 return $state->key;
             })
-            ->filter(function ($group) {
-                return $group->count() > 1;
-            })
+            ->duplicates()
             ->whenNotEmpty(function ($duplicates) {
                 throw ConfigurationException::duplicateKeys($duplicates);
             });

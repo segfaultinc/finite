@@ -27,7 +27,7 @@ class ConfigurationException extends Exception
 
     public static function duplicateKeys(Collection $duplicates): self
     {
-        return self::new('Every state much have a unique key. Contains duplicate keys ['.$duplicates->keys()->implode(', ').'].');
+        return self::new('Every state much have a unique key. Contains duplicate keys ['.$duplicates->implode(', ').'].');
     }
 
     public static function nonDeterministicTransitions(Collection $transitions): self

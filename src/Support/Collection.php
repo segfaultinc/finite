@@ -37,6 +37,11 @@ class Collection implements Countable, ArrayAccess
         }
     }
 
+    public function duplicates(): self
+    {
+        return new static(array_values(array_unique(array_diff_assoc($this->items, array_unique($this->items)))));
+    }
+
     public function groupBy(callable $fn): self
     {
         return new self(array_reduce($this->items, function ($xs, $x) use ($fn) {

@@ -22,9 +22,9 @@ class FiniteTest extends TestCase
             ]);
 
         $this->assertCount(3, $machine->getStates());
-        $this->assertSame($init, $machine->getStates()[0]);
-        $this->assertSame($work, $machine->getStates()[1]);
-        $this->assertSame($done, $machine->getStates()[2]);
+        $this->assertSame($init, $machine->getStates()->toArray()[0]);
+        $this->assertSame($work, $machine->getStates()->toArray()[1]);
+        $this->assertSame($done, $machine->getStates()->toArray()[2]);
     }
 
     /** @test */
@@ -84,7 +84,7 @@ class FiniteTest extends TestCase
             ]);
 
         $this->assertCount(2, $machine->getTransitions());
-        $this->assertSame($one, $machine->getTransitions()[0]);
-        $this->assertSame($two, $machine->getTransitions()[1]);
+        $this->assertSame($one, $machine->getTransitions()->toArray()[0]);
+        $this->assertSame($two, $machine->getTransitions()->toArray()[1]);
     }
 }

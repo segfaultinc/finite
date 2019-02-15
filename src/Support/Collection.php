@@ -3,9 +3,8 @@
 namespace SegfaultInc\Finite\Support;
 
 use Countable;
-use ArrayAccess;
 
-class Collection implements Countable, ArrayAccess
+class Collection implements Countable
 {
     /** @var array */
     private $items = [];
@@ -40,16 +39,6 @@ class Collection implements Countable, ArrayAccess
     public function duplicates(): self
     {
         return new static(array_values(array_unique(array_diff_assoc($this->items, array_unique($this->items)))));
-    }
-
-    public function groupBy(callable $fn): self
-    {
-        return new self(array_reduce($this->items, function ($xs, $x) use ($fn) {
-            $key = $fn($x);
-            $xs[$key] = $xs[$key] ?? new static([]);
-            $xs[$key][] = $x;
-            return $xs;
-        }, []));
     }
 
     public function intersect(array $other): self
@@ -93,30 +82,6 @@ class Collection implements Countable, ArrayAccess
         }
 
         return $this;
-    }
-
-    public function offsetSet($key, $value)
-    {
-        if ($key) {
-            $this->items[$key] = $value;
-        } else {
-            $this->items[] = $value;
-        }
-    }
-
-    public function offsetExists($key)
-    {
-        return isset($this->items[$key]);
-    }
-
-    public function offsetUnset($key)
-    {
-        unset($this->items[$key]);
-    }
-
-    public function offsetGet($key)
-    {
-        return $this->items[$key];
     }
 
     public static function make(array $items = []): self

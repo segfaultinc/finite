@@ -62,11 +62,6 @@ class Collection implements Countable, ArrayAccess
         return implode($glue, $this->items);
     }
 
-    public function keys(): self
-    {
-        return new self(array_keys($this->items));
-    }
-
     public function count(): int
     {
         return count($this->items);

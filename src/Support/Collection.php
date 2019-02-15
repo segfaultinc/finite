@@ -86,6 +86,6 @@ class Collection implements Countable
 
     public static function make(array $items = []): self
     {
-        return new self($items);
+        return new static($items);
     }
 }

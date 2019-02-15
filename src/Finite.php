@@ -8,18 +8,23 @@ class Finite
 {
     /** @var StatesCollection */
     private $states;
+
+    /** @var Collection */
     private $transitions = [];
+
+    /** @var bool */
     private $hooks = true;
 
     public function __construct()
     {
-        $this->states = new StatesCollection();
+        $this->states = StatesCollection::make([]);
+        $this->transitions = Collection::make([]);
     }
 
     public function setStates(array $states): self
     {
         $this->states = Validator::states(
-            new StatesCollection($states)
+            StatesCollection::make($states)
         );
 
         return $this;
@@ -32,14 +37,16 @@ class Finite
 
     public function setTransitions(array $transitions): self
     {
-        $this->transitions = Validator::transitions($transitions);
+        $this->transitions = Validator::transitions(
+            Collection::make($transitions)
+        );
 
         return $this;
     }
 
     public function getTransitions(): Collection
     {
-        return Collection::make($this->transitions);
+        return $this->transitions;
     }
 
     public function apply(Subject $subject, string $input): void

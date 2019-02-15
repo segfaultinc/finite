@@ -36,9 +36,9 @@ class Validator
         return $states;
     }
 
-    public static function transitions(array $transitions): array
+    public static function transitions(Collection $transitions): Collection
     {
-        $duplicates = Collection::make($transitions)
+        $duplicates = $transitions
             ->map(function (Transition $transition) {
                 return $transition->from()->key.' <+> '.$transition->input();
             })
@@ -55,7 +55,7 @@ class Validator
             ->map(function ($xs) use ($transitions) {
                 [$from, $input] = $xs;
 
-                $nonDeterministic = Collection::make($transitions)
+                $nonDeterministic = $transitions
                     ->filter(function (Transition $transition) use ($from, $input) {
                         return $transition->from()->key == $from
                             && $transition->input() == $input;
@@ -66,7 +66,7 @@ class Validator
         return $transitions;
     }
 
-    public static function subject(StatesCollection $states, array $transitions, Subject $subject, string $input): void
+    public static function subject(StatesCollection $states, Collection $transitions, Subject $subject, string $input): void
     {
         $states
             ->filter(function (State $state) use ($subject) {
@@ -76,7 +76,7 @@ class Validator
                 throw SubjectInInvalidStateException::new($subject->getFiniteState());
             });
 
-        Collection::make($transitions)
+        $transitions
             ->filter(function ($transition) use ($subject, $input) {
                 return $transition->from()->key == $subject->getFiniteState()
                     && $transition->input() == $input;

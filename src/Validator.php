@@ -2,6 +2,7 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Collection;
 use SegfaultInc\Finite\Exceptions\InvalidInputException;
 use SegfaultInc\Finite\Exceptions\ConfigurationException;
 use SegfaultInc\Finite\Exceptions\SubjectInInvalidStateException;

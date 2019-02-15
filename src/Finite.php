@@ -2,6 +2,8 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Collection;
+
 class Finite
 {
     /** @var StatesCollection */

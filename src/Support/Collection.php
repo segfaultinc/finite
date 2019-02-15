@@ -1,6 +1,6 @@
 <?php
 
-namespace SegfaultInc\Finite;
+namespace SegfaultInc\Finite\Support;
 
 use Countable;
 use ArrayAccess;

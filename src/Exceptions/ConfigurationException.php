@@ -3,9 +3,9 @@
 namespace SegfaultInc\Finite\Exceptions;
 
 use Exception;
-use SegfaultInc\Finite\Collection;
 use SegfaultInc\Finite\State;
 use SegfaultInc\Finite\Transition;
+use SegfaultInc\Finite\Support\Collection;
 
 class ConfigurationException extends Exception
 {

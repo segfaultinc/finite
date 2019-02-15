@@ -2,6 +2,8 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Collection;
+
 class StatesCollection extends Collection
 {
     public function find(string $key): State

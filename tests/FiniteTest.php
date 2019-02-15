@@ -3,7 +3,7 @@
 namespace SegfaultInc\Finite\Tests;
 
 use SegfaultInc\Finite\State;
-use SegfaultInc\Finite\Finite;
+use SegfaultInc\Finite\Graph;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
 use SegfaultInc\Finite\Exceptions\InvalidStateException;
@@ -14,7 +14,7 @@ class FiniteTest extends TestCase
     /** @test */
     public function can_register_states()
     {
-        $machine = (new Finite)
+        $machine = (new Graph)
             ->setStates([
                 $init = State::initial('init'),
                 $work = State::normal('work'),
@@ -30,7 +30,7 @@ class FiniteTest extends TestCase
     /** @test */
     public function it_finds_state_by_key()
     {
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $init = State::initial('init'),
             ]);
@@ -43,7 +43,7 @@ class FiniteTest extends TestCase
     {
         $this->expectException(InvalidStateException::class);
 
-        $finite = (new Finite);
+        $finite = (new Graph);
 
         $finite->getStates()->find('NON-EXISTING');
     }
@@ -51,7 +51,7 @@ class FiniteTest extends TestCase
     /** @test */
     public function it_finds_initial_state()
     {
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $init = State::initial('init'),
             ]);
@@ -64,7 +64,7 @@ class FiniteTest extends TestCase
     {
         $this->expectException(NoInitialStateException::class);
 
-        $finite = (new Finite);
+        $finite = (new Graph);
 
         $finite->getStates()->initial();
     }
@@ -72,7 +72,7 @@ class FiniteTest extends TestCase
     /** @test */
     public function can_register_transitions()
     {
-        $machine = (new Finite)
+        $machine = (new Graph)
             ->setStates([
                 $a = State::initial('a'),
                 $b = State::normal('b'),

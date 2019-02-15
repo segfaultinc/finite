@@ -3,7 +3,7 @@
 namespace SegfaultInc\Finite\Tests;
 
 use SegfaultInc\Finite\State;
-use SegfaultInc\Finite\Finite;
+use SegfaultInc\Finite\Graph;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
 use SegfaultInc\Finite\Exceptions\ConfigurationException;
@@ -16,7 +16,7 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There must exist a single initial state. None present.');
 
-        (new Finite)
+        (new Graph)
             ->setStates([
                 State::normal('work'),
             ]);
@@ -28,7 +28,7 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There must exist a single initial state. Multiple present [a, b].');
 
-        (new Finite)
+        (new Graph)
             ->setStates([
                 State::initial('a'),
                 State::initial('b'),
@@ -41,7 +41,7 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('Every state much have a unique key. Contains duplicate keys [a, b].');
 
-        (new Finite)
+        (new Graph)
             ->setStates([
                 State::initial('a'),
                 State::normal('a'),
@@ -57,7 +57,7 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There are 2 transitions coming out of [new] with same input [a]. Specifically: [new --(a)--> foo], [new --(a)--> bar].');
 
-        (new Finite)
+        (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),

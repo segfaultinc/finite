@@ -4,7 +4,7 @@ namespace SegfaultInc\Finite;
 
 use SegfaultInc\Finite\Support\Collection;
 
-class Finite
+class Graph
 {
     /** @var StatesCollection */
     private $states;

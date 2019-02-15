@@ -4,7 +4,7 @@ namespace SegfaultInc\Finite\Tests;
 
 use Mockery as M;
 use SegfaultInc\Finite\State;
-use SegfaultInc\Finite\Finite;
+use SegfaultInc\Finite\Graph;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -24,7 +24,7 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -57,7 +57,7 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -92,7 +92,7 @@ class HooksTest extends TestCase
             $results[] = 'post';
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -115,7 +115,7 @@ class HooksTest extends TestCase
             throw new Whoops('¯\_(ツ)_/¯');
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -139,7 +139,7 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -171,7 +171,7 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo')
@@ -195,7 +195,7 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new')
                     ->leaving($hook),

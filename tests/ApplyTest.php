@@ -3,7 +3,7 @@
 namespace SegfaultInc\Finite\Tests;
 
 use SegfaultInc\Finite\State;
-use SegfaultInc\Finite\Finite;
+use SegfaultInc\Finite\Graph;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Exceptions;
 use SegfaultInc\Finite\Transition;
@@ -15,7 +15,7 @@ class ApplyTest extends TestCase
     {
         $subject = new SampleSubject('new');
 
-        $finite = (new Finite)
+        $finite = (new Graph)
             ->setStates([
                 $new = State::initial('new'),
                 $foo = State::normal('foo'),
@@ -34,7 +34,7 @@ class ApplyTest extends TestCase
     {
         $this->expectException(Exceptions\SubjectInInvalidStateException::class);
 
-        (new Finite)->apply(new SampleSubject('invalid'), 'a');
+        (new Graph)->apply(new SampleSubject('invalid'), 'a');
     }
 
     /** @test */
@@ -42,7 +42,7 @@ class ApplyTest extends TestCase
     {
         $this->expectException(Exceptions\InvalidInputException::class);
 
-        $finite = (new Finite)
+        $finite = (new Graph)
          ->setStates([
              $new = State::initial('new'),
              $foo = State::normal('foo'),

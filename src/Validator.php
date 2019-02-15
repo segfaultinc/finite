@@ -38,17 +38,31 @@ class Validator
 
     public static function transitions(array $transitions): array
     {
-        Collection::make($transitions)
-            ->groupBy(function (Transition $transition) {
+        $duplicates = Collection::make($transitions)
+            ->map(function (Transition $transition) {
                 return $transition->from()->key.' <+> '.$transition->input();
             })
-            ->filter(function ($transitions) {
-                return $transitions->count() > 1;
-            })
-            ->each(function ($transitions) {
-                throw ConfigurationException::nonDeterministicTransitions($transitions);
-            });
+            ->duplicates();
 
+        if ($duplicates->empty()) {
+            return $transitions;
+        }
+
+        $duplicates
+            ->map(function ($key) {
+                return explode(' <+> ', $key);
+            })
+            ->map(function ($xs) use ($transitions) {
+                [$from, $input] = $xs;
+
+                $nonDeterministic = Collection::make($transitions)
+                    ->filter(function (Transition $transition) use ($from, $input) {
+                        return $transition->from()->key == $from
+                            && $transition->input() == $input;
+                    });
+
+                throw ConfigurationException::nonDeterministicTransitions($nonDeterministic);
+            });
         return $transitions;
     }
 

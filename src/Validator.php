@@ -63,6 +63,7 @@ class Validator
 
                 throw ConfigurationException::nonDeterministicTransitions($nonDeterministic);
             });
+
         return $transitions;
     }
 

@@ -10,7 +10,6 @@ use SegfaultInc\Finite\Exceptions\NoInitialStateException;
 
 class StatesTest extends TestCase
 {
-
     /** @test */
     public function it_finds_state_by_key()
     {

@@ -22,9 +22,11 @@ class GraphTest extends TestCase
             ]);
 
         $this->assertCount(3, $machine->getStates());
-        $this->assertSame($init, $machine->getStates()->toArray()[0]);
-        $this->assertSame($work, $machine->getStates()->toArray()[1]);
-        $this->assertSame($done, $machine->getStates()->toArray()[2]);
+
+        $this->assertSame(
+            [$init, $work, $done],
+            $machine->getStates()->toArray()
+        );
     }
 
     /** @test */

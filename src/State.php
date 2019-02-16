@@ -20,7 +20,7 @@ class State
 
     private function __construct(string $type, string $key)
     {
-        $this->key = $this->label = $key;
+        $this->key = $key;
         $this->type = $type;
     }
 

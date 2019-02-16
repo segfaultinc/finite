@@ -9,7 +9,7 @@ use SegfaultInc\Finite\Transition;
 use SegfaultInc\Finite\Exceptions\InvalidStateException;
 use SegfaultInc\Finite\Exceptions\NoInitialStateException;
 
-class FiniteTest extends TestCase
+class GraphTest extends TestCase
 {
     /** @test */
     public function can_register_states()

@@ -9,6 +9,10 @@ use SegfaultInc\Finite\Exceptions\SubjectInInvalidStateException;
 
 class Validator
 {
+    /**
+     * Validate states by checking for 'no initial state',
+     * 'multiple initial states' or 'duplicate state' cases.
+     */
     public static function states(StatesCollection $states): StatesCollection
     {
         $initial = $states
@@ -36,19 +40,16 @@ class Validator
         return $states;
     }
 
+    /**
+     * Validate transition by checking for 'non deterministic' transitions.
+     */
     public static function transitions(Collection $transitions): Collection
     {
-        $duplicates = $transitions
+        $transitions
             ->map(function (Transition $transition) {
                 return $transition->from()->key.' <+> '.$transition->input();
             })
-            ->duplicates();
-
-        if ($duplicates->empty()) {
-            return $transitions;
-        }
-
-        $duplicates
+            ->duplicates()
             ->map(function ($key) {
                 return explode(' <+> ', $key);
             })
@@ -67,6 +68,10 @@ class Validator
         return $transitions;
     }
 
+    /**
+     * Validate given subject and input by checking for
+     * 'subject in invalid state' and 'invalid input' cases.
+     */
     public static function subject(StatesCollection $states, Collection $transitions, Subject $subject, string $input): void
     {
         $states

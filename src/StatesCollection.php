@@ -6,6 +6,9 @@ use SegfaultInc\Finite\Support\Collection;
 
 class StatesCollection extends Collection
 {
+    /**
+     * Find a state by the given key.
+     */
     public function find(string $key): State
     {
         return $this
@@ -17,6 +20,9 @@ class StatesCollection extends Collection
             });
     }
 
+    /**
+     * Get the initial state.
+     */
     public function initial(): State
     {
         return $this

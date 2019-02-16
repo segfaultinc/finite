@@ -21,6 +21,9 @@ class Graph
         $this->transitions = Collection::make([]);
     }
 
+    /**
+     * Set states for the graph.
+     */
     public function setStates(array $states): self
     {
         $this->states = Validator::states(
@@ -30,11 +33,17 @@ class Graph
         return $this;
     }
 
+    /**
+     * Retrieve all states for the graph.
+     */
     public function getStates(): StatesCollection
     {
         return $this->states;
     }
 
+    /**
+     * Set transition for the graph.
+     */
     public function setTransitions(array $transitions): self
     {
         $this->transitions = Validator::transitions(
@@ -44,11 +53,17 @@ class Graph
         return $this;
     }
 
+    /**
+     * Retrieve all transition for the graph.
+     */
     public function getTransitions(): Collection
     {
         return $this->transitions;
     }
 
+    /**
+     * Apply given input to the graph on given subject.
+     */
     public function apply(Subject $subject, string $input): void
     {
         Validator::subject($this->states, $this->transitions, $subject, $input);
@@ -77,6 +92,9 @@ class Graph
         }
     }
 
+    /**
+     * Disable all hooks.
+     */
     public function disableHooks(): self
     {
         $this->hooks = false;
@@ -84,6 +102,9 @@ class Graph
         return $this;
     }
 
+    /**
+     * Enable all hooks.
+     */
     public function enableHooks(): self
     {
         $this->hooks = true;

@@ -5,17 +5,17 @@ namespace SegfaultInc\Finite;
 interface Subject
 {
     /**
-     * Returns string representing state in FSM.
+     * Returns a string representing the state of the subject in the machine.
      */
     public function getFiniteState(): string;
 
     /**
-     * Sets state of subject in FSM.
+     * Set the state of the subject in the machine.
      */
     public function setFiniteState(string $state): void;
 
     /**
-     * Apply given input to the machine.
+     * Apply given input to the subject given the machine.
      */
     public function applyTransition(string $input): void;
 }

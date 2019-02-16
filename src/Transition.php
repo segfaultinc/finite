@@ -94,11 +94,17 @@ class Transition
         }
     }
 
+    /**
+     * Return a string representation of the transition.
+     */
     public function toString(): string
     {
         return "{$this->from()->key} --({$this->input()})--> {$this->to()->key}";
     }
 
+    /**
+     * Create new transition.
+     */
     public static function new(State $from, State $to, string $input): self
     {
         return new self($from, $to, $input);

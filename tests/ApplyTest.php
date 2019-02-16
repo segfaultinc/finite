@@ -2,8 +2,8 @@
 
 namespace SegfaultInc\Finite\Tests;
 
-use SegfaultInc\Finite\State;
 use SegfaultInc\Finite\Graph;
+use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Exceptions;
 use SegfaultInc\Finite\Transition;

@@ -77,7 +77,7 @@ class Collection implements Countable
 
     public function whenNotEmpty(callable $fn): self
     {
-        if (!$this->empty()) {
+        if (! $this->empty()) {
             $fn($this);
         }
 

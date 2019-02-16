@@ -3,8 +3,8 @@
 namespace SegfaultInc\Finite\Tests;
 
 use Mockery as M;
-use SegfaultInc\Finite\State;
 use SegfaultInc\Finite\Graph;
+use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;

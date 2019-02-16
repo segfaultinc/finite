@@ -36,7 +36,7 @@ class ConfigurationException extends Exception
             ->map(function (Transition $transition) {
                 return "[{$transition->toString()}]";
             })
-            ->implode(", ");
+            ->implode(', ');
 
         return self::new(
             'There are %s transitions coming out of [%s] with same input [%s]. Specifically: %s.',

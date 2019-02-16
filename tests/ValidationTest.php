@@ -18,7 +18,7 @@ class ValidationTest extends TestCase
 
         (new Graph)
             ->setStates([
-                State::normal('work'),
+                State::normal('a'),
             ]);
     }
 

@@ -21,12 +21,12 @@ class Collection implements Countable
 
     public function filter(callable $fn): self
     {
-        return new static(array_filter($this->items, $fn));
+        return new static(array_values(array_filter($this->items, $fn)));
     }
 
     public function map(callable $fn): self
     {
-        return new static(array_map($fn, $this->items));
+        return new static(array_values(array_map($fn, $this->items)));
     }
 
     public function each(callable $fn): void

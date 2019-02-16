@@ -136,33 +136,63 @@ class HooksTest extends TestCase
     /** @test */
     public function it_allows_to_disable_and_reenable_hooks()
     {
-        $hook = M::spy(function () {
+        $preHook = M::spy(function () {
+            //
+        });
+
+        $postHook = M::spy(function () {
+            //
+        });
+
+        $leavingHook = M::spy(function () {
+            //
+        });
+
+        $enteringHook = M::spy(function () {
             //
         });
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                $new = State::initial('new')
+                    ->leaving($leavingHook),
+                $foo = State::normal('foo')
+                    ->entering($enteringHook),
             ])
             ->setTransitions([
                 Transition::new($new, $foo, 'a')
-                    ->pre($hook),
+                    ->pre($preHook)
+                    ->post($postHook),
             ]);
 
         $finite->disableHooks();
 
         $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
-        $hook->shouldNotHaveBeenCalled();
+        $preHook->shouldNotHaveBeenCalled();
+        $postHook->shouldNotHaveBeenCalled();
+        $leavingHook->shouldNotHaveBeenCalled();
+        $enteringHook->shouldNotHaveBeenCalled();
 
         $finite->enableHooks();
 
         $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
-        $hook->shouldHaveBeenCalled()
-             ->once()
-             ->with($subject);
+        $preHook->shouldHaveBeenCalled()
+                ->once()
+                ->with($subject);
+
+        $postHook->shouldHaveBeenCalled()
+                ->once()
+                ->with($subject);
+
+        $leavingHook->shouldHaveBeenCalled()
+                ->once()
+                ->with($subject);
+
+        $enteringHook->shouldHaveBeenCalled()
+                ->once()
+                ->with($subject);
     }
 
     /** @test */

@@ -134,6 +134,54 @@ class HooksTest extends TestCase
     }
 
     /** @test */
+    public function it_allows_to_register_entering_hooks()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                $new = State::initial('new'),
+                $foo = State::normal('foo')
+                    ->entering($hook),
+            ])
+            ->setTransitions([
+                Transition::new($new, $foo, 'a'),
+            ]);
+
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
+
+    /** @test */
+    public function it_allows_to_register_leaving_hooks()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                $new = State::initial('new')
+                    ->leaving($hook),
+                $foo = State::normal('foo'),
+            ])
+            ->setTransitions([
+                Transition::new($new, $foo, 'a'),
+            ]);
+
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
+
+    /** @test */
     public function it_allows_to_disable_and_reenable_hooks()
     {
         $preHook = M::spy(function () {
@@ -193,54 +241,6 @@ class HooksTest extends TestCase
         $enteringHook->shouldHaveBeenCalled()
                 ->once()
                 ->with($subject);
-    }
-
-    /** @test */
-    public function it_allows_to_register_entering_hooks()
-    {
-        $hook = M::spy(function () {
-            //
-        });
-
-        $finite = (new Graph)
-            ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo')
-                    ->entering($hook),
-            ])
-            ->setTransitions([
-                Transition::new($new, $foo, 'a'),
-            ]);
-
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
-
-        $hook->shouldHaveBeenCalled()
-            ->once()
-            ->with($subject);
-    }
-
-    /** @test */
-    public function it_allows_to_register_leaving_hooks()
-    {
-        $hook = M::spy(function () {
-            //
-        });
-
-        $finite = (new Graph)
-            ->setStates([
-                $new = State::initial('new')
-                    ->leaving($hook),
-                $foo = State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new($new, $foo, 'a'),
-            ]);
-
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
-
-        $hook->shouldHaveBeenCalled()
-            ->once()
-            ->with($subject);
     }
 }
 

@@ -7,6 +7,7 @@ use SegfaultInc\Finite\Graph;
 use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
+use SegfaultInc\Finite\Tests\Stubs\Subject;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class HooksTest extends TestCase
@@ -35,7 +36,7 @@ class HooksTest extends TestCase
                     ->pre($hook2),
             ]);
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
@@ -68,7 +69,7 @@ class HooksTest extends TestCase
                     ->post($hook2),
             ]);
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
@@ -103,7 +104,7 @@ class HooksTest extends TestCase
                     ->post($post),
             ]);
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $this->assertSame(['pre', 'post'], $results);
     }
@@ -126,7 +127,7 @@ class HooksTest extends TestCase
             ]);
 
         try {
-            $finite->apply($subject = new SampleSubject('new'), 'a');
+            $finite->apply($subject = new Stubs\Subject('new'), 'a');
         } catch (Whoops $e) {
             $this->assertEquals('new', $subject->getFiniteState());
         }
@@ -151,13 +152,13 @@ class HooksTest extends TestCase
 
         $finite->disableHooks();
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $hook->shouldNotHaveBeenCalled();
 
         $finite->enableHooks();
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
              ->once()
@@ -181,7 +182,7 @@ class HooksTest extends TestCase
                 Transition::new($new, $foo, 'a'),
             ]);
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
@@ -205,7 +206,7 @@ class HooksTest extends TestCase
                 Transition::new($new, $foo, 'a'),
             ]);
 
-        $finite->apply($subject = new SampleSubject('new'), 'a');
+        $finite->apply($subject = new Stubs\Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()

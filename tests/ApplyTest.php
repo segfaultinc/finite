@@ -7,13 +7,14 @@ use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Exceptions;
 use SegfaultInc\Finite\Transition;
+use SegfaultInc\Finite\Tests\Stubs\Subject;
 
 class ApplyTest extends TestCase
 {
     /** @test */
     public function it_applies_transition()
     {
-        $subject = new SampleSubject('new');
+        $subject = new Subject('new');
 
         $finite = (new Graph)
             ->setStates([
@@ -34,7 +35,7 @@ class ApplyTest extends TestCase
     {
         $this->expectException(Exceptions\SubjectInInvalidStateException::class);
 
-        (new Graph)->apply(new SampleSubject('invalid'), 'a');
+        (new Graph)->apply(new Subject('invalid'), 'a');
     }
 
     /** @test */
@@ -51,6 +52,6 @@ class ApplyTest extends TestCase
              Transition::new($new, $foo, 'a'),
          ]);
 
-        $finite->apply(new SampleSubject('new'), 'b');
+        $finite->apply(new Subject('new'), 'b');
     }
 }

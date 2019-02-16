@@ -1,10 +1,10 @@
 <?php
 
-namespace SegfaultInc\Finite\Tests;
+namespace SegfaultInc\Finite\Tests\Stubs;
 
-use SegfaultInc\Finite\Subject;
+use SegfaultInc\Finite\Subject as SubjectContract;
 
-class SampleSubject implements Subject
+class Subject implements SubjectContract
 {
     /** @var string */
     private $state;

@@ -68,6 +68,7 @@ class Graph
 
         $subject->setFiniteState($to->key);
 
+        // TODO: can be enabled/disabled
         $to->executeEnteringHooks($subject);
         $from->executeLeavingHooks($subject);
 

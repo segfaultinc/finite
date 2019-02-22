@@ -41,9 +41,18 @@ class ConfigurationException extends Exception
         return self::new(
             'There are %s transitions coming out of [%s] with same input [%s]. Specifically: %s.',
             $transitions->count(),
-            $transitions->first()->from()->key,
+            $transitions->first()->from(),
             $transitions->first()->input(),
             $nonDeterministic
+        );
+    }
+
+    public static function nonExistingState(Transition $transition, string $state): self
+    {
+        return self::new(
+            'Transition [%s] is referring to a non-existing state [%s].',
+            $transition->toString(),
+            $state
         );
     }
 

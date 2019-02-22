@@ -47,7 +47,8 @@ class Graph
     public function setTransitions(array $transitions): self
     {
         $this->transitions = Validator::transitions(
-            Collection::make($transitions)
+            Collection::make($transitions),
+            $this->states
         );
 
         return $this;
@@ -70,12 +71,13 @@ class Graph
 
         $transition = $this->getTransitions()
             ->filter(function (Transition $transition) use ($subject, $input) {
-                return $transition->from()->key == $subject->getFiniteState()
+                return $transition->from() == $subject->getFiniteState()
                     && $transition->input() == $input;
             })
             ->first();
 
-        [$from, $to] = [$transition->from(), $transition->to()];
+        $from = $this->getStates()->find($transition->from());
+        $to = $this->getStates()->find($transition->to());
 
         if ($this->hooks) {
             $transition->executePreHooks($subject);

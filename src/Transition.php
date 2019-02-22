@@ -4,10 +4,10 @@ namespace SegfaultInc\Finite;
 
 class Transition
 {
-    /** @var State */
+    /** @var string */
     protected $to;
 
-    /** @var State */
+    /** @var string */
     protected $from;
 
     /** @var string */
@@ -22,7 +22,7 @@ class Transition
     /**
      * Create new transition.
      */
-    private function __construct(State $from, State $to, string $input)
+    private function __construct(string $from, string $to, string $input)
     {
         $this->from = $from;
         $this->to = $to;
@@ -32,7 +32,7 @@ class Transition
     /**
      * Get the "from" state.
      */
-    public function from(): State
+    public function from(): string
     {
         return $this->from;
     }
@@ -40,7 +40,7 @@ class Transition
     /**
      * Get the "to" state.
      */
-    public function to(): State
+    public function to(): string
     {
         return $this->to;
     }
@@ -99,13 +99,13 @@ class Transition
      */
     public function toString(): string
     {
-        return "{$this->from()->key} --({$this->input()})--> {$this->to()->key}";
+        return "{$this->from} --({$this->input})--> {$this->to}";
     }
 
     /**
      * Create new transition.
      */
-    public static function new(State $from, State $to, string $input): self
+    public static function new(string $from, string $to, string $input): self
     {
         return new self($from, $to, $input);
     }

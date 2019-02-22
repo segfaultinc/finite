@@ -52,6 +52,33 @@ class ValidationTest extends TestCase
     }
 
     /** @test */
+    public function transitions_must_refer_to_existing_from_state()
+    {
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('Transition [non-existing --(a)--> foo] is referring to a non-existing state [non-existing].');
+
+        (new Graph)
+            ->setTransitions([
+                Transition::new('non-existing', 'foo', 'a'),
+            ]);
+    }
+
+    /** @test */
+    public function transitions_must_refer_to_existing_to_state()
+    {
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('Transition [foo --(a)--> non-existing] is referring to a non-existing state [non-existing].');
+
+        (new Graph)
+            ->setStates([
+                State::initial('foo'),
+            ])
+            ->setTransitions([
+                Transition::new('foo', 'non-existing', 'a'),
+            ]);
+    }
+
+    /** @test */
     public function there_cannot_be_two_transitions_with_same_input_from_single_state()
     {
         $this->expectException(ConfigurationException::class);
@@ -59,13 +86,13 @@ class ValidationTest extends TestCase
 
         (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
-                $bar = State::normal('bar'),
+                State::initial('new'),
+                State::normal('foo'),
+                State::normal('bar'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a'),
-                Transition::new($new, $bar, 'a'),
+                Transition::new('new', 'foo', 'a'),
+                Transition::new('new', 'bar', 'a'),
             ]);
     }
 }

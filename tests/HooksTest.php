@@ -27,11 +27,11 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a')
+                Transition::new('new', 'foo', 'a')
                     ->pre($hook)
                     ->pre($hook2),
             ]);
@@ -60,11 +60,11 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a')
+                Transition::new('new', 'foo', 'a')
                     ->post($hook)
                     ->post($hook2),
             ]);
@@ -95,16 +95,16 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a')
+                Transition::new('new', 'foo', 'a')
                     ->pre($pre)
                     ->post($post),
             ]);
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $finite->apply(new Stubs\Subject('new'), 'a');
 
         $this->assertSame(['pre', 'post'], $results);
     }
@@ -118,11 +118,11 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a')
+                Transition::new('new', 'foo', 'a')
                     ->pre($pre),
             ]);
 
@@ -142,12 +142,12 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo')
+                State::initial('new'),
+                State::normal('foo')
                     ->entering($hook),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a'),
+                Transition::new('new', 'foo', 'a'),
             ]);
 
         $finite->apply($subject = new Stubs\Subject('new'), 'a');
@@ -166,12 +166,12 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new')
+                State::initial('new')
                     ->leaving($hook),
-                $foo = State::normal('foo'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a'),
+                Transition::new('new', 'foo', 'a'),
             ]);
 
         $finite->apply($subject = new Stubs\Subject('new'), 'a');
@@ -202,13 +202,13 @@ class HooksTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new')
+                State::initial('new')
                     ->leaving($leavingHook),
-                $foo = State::normal('foo')
+                State::normal('foo')
                     ->entering($enteringHook),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a')
+                Transition::new('new', 'foo', 'a')
                     ->pre($preHook)
                     ->post($postHook),
             ]);

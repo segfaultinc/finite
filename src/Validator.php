@@ -43,11 +43,30 @@ class Validator
     /**
      * Validate transition by checking for 'non deterministic' transitions.
      */
-    public static function transitions(Collection $transitions): Collection
+    public static function transitions(Collection $transitions, StatesCollection $states): Collection
     {
         $transitions
+             ->each(function ($transition) use ($states) {
+                 [$from, $to] = [$transition->from(), $transition->to()];
+
+                 $states
+                    ->filter(function (State $state) use ($from) {
+                        return $state->key == $from;
+                    })
+                    ->whenEmpty(function () use ($transition, $from) {
+                        throw ConfigurationException::nonExistingState($transition, $from);
+                    });
+
+                 $states
+                    ->filter(function (State $state) use ($to) {
+                        return $state->key == $to;
+                    })
+                    ->whenEmpty(function () use ($transition, $to) {
+                        throw ConfigurationException::nonExistingState($transition, $to);
+                    });
+             })
             ->map(function (Transition $transition) {
-                return $transition->from()->key.' <+> '.$transition->input();
+                return $transition->from().' <+> '.$transition->input();
             })
             ->duplicates()
             ->map(function ($key) {
@@ -58,7 +77,7 @@ class Validator
 
                 $nonDeterministic = $transitions
                     ->filter(function (Transition $transition) use ($from, $input) {
-                        return $transition->from()->key == $from
+                        return $transition->from() == $from
                             && $transition->input() == $input;
                     });
 
@@ -84,7 +103,7 @@ class Validator
 
         $transitions
             ->filter(function ($transition) use ($subject, $input) {
-                return $transition->from()->key == $subject->getFiniteState()
+                return $transition->from() == $subject->getFiniteState()
                     && $transition->input() == $input;
             })
             ->whenEmpty(function () use ($subject, $input) {

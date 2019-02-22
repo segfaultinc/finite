@@ -18,11 +18,11 @@ class ApplyTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a'),
+                Transition::new('new', 'foo', 'a'),
             ]);
 
         $finite->apply($subject, 'a');
@@ -45,11 +45,11 @@ class ApplyTest extends TestCase
 
         $finite = (new Graph)
             ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
+                State::initial('new'),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new($new, $foo, 'a'),
+                Transition::new('new', 'foo', 'a'),
             ]);
 
         $finite->apply(new Subject('new'), 'b');

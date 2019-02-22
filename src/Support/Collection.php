@@ -29,11 +29,13 @@ class Collection implements Countable
         return new static(array_values(array_map($fn, $this->items)));
     }
 
-    public function each(callable $fn): void
+    public function each(callable $fn): self
     {
         foreach ($this->items as $item) {
             $fn($item);
         }
+
+        return $this;
     }
 
     public function duplicates(): self

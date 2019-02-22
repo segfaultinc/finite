@@ -10,7 +10,7 @@ class Transition
     /** @var State */
     protected $from;
 
-    /** @var State */
+    /** @var string */
     protected $input;
 
     /** @var array */

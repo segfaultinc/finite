@@ -79,3 +79,13 @@ class Order extends Model implements Subject
         
     ]);
 ```
+
+## Visualization
+
+```php
+$graph->visualize()
+
+// uses GraphViz under the hood
+```
+
+![](https://user-images.githubusercontent.com/4470539/53287565-e4bfff00-3775-11e9-9aea-8b498ba5ac09.png)

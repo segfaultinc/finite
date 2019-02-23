@@ -36,7 +36,7 @@ class Order extends Model implements Subject
 (new Graph)
     ->setStates([
     
-        State::normal('new')
+        State::initial('new')
             ->label('New')
             ->leaving(function (Order $order) {
                 // This is executed every time the `in_progress` is **transitioned from**.

@@ -22,6 +22,9 @@
         "mockery/mockery": "^1.2",
         "phpunit/phpunit": "^8.0"
     },
+    "suggest": {
+        "graphp/graphviz": "Allows to visualize graph using GraphViz"
+    },
     "autoload": {
         "psr-4": {
             "SegfaultInc\\Finite\\": "src/"

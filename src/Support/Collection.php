@@ -76,6 +76,17 @@ final class Collection
         return new self($items);
     }
 
+    public function mapWithKeys(callable $fn): self
+    {
+        $items = [];
+
+        foreach ($this->items as $item) {
+            $items = array_merge($items, $fn($item));
+        }
+
+        return new self($items);
+    }
+
     public function duplicates(callable $fn): self
     {
         return new self(

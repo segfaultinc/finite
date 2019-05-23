@@ -4,6 +4,7 @@ namespace SegfaultInc\Finite;
 
 use SegfaultInc\Finite\Support\Validator;
 use SegfaultInc\Finite\Support\Collection;
+use SegfaultInc\Finite\Support\Visualizer;
 
 class Graph
 {
@@ -159,5 +160,10 @@ class Graph
         }
 
         return $this;
+    }
+
+    public function visualize(): void
+    {
+        Visualizer::visualize($this);
     }
 }

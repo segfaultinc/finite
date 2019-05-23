@@ -3,8 +3,8 @@
 namespace SegfaultInc\Finite\Support;
 
 use SegfaultInc\Finite\State;
+use SegfaultInc\Finite\Subject;
 use SegfaultInc\Finite\Transition;
-use SegfaultInc\Finite\Tests\Stubs\Subject;
 use SegfaultInc\Finite\Exceptions\InvalidInputException;
 use SegfaultInc\Finite\Exceptions\ConfigurationException;
 use SegfaultInc\Finite\Exceptions\SubjectInInvalidStateException;

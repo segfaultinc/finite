@@ -8,9 +8,35 @@ use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Exceptions;
 use SegfaultInc\Finite\Transition;
 use SegfaultInc\Finite\Tests\Stubs\Subject;
+use SegfaultInc\Finite\Exceptions\NoInitialStateException;
 
 class ApplyTest extends TestCase
 {
+    /** @test */
+    public function it_initializes_subject()
+    {
+        $subject = new Subject('[empty]');
+
+        $finite = (new Graph)
+            ->setStates([
+                State::initial('new'),
+            ]);
+
+        $finite->initialize($subject);
+
+        $this->assertEquals('new', $subject->getFiniteState());
+    }
+
+    /** @test */
+    public function it_throws_when_trying_to_initialize_without_initial_state_set()
+    {
+        $this->expectException(NoInitialStateException::class);
+
+        $finite = (new Graph);
+
+        $finite->initialize(new Subject('[empty]'));
+    }
+
     /** @test */
     public function it_applies_transition()
     {

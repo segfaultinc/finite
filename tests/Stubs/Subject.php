@@ -2,11 +2,10 @@
 
 namespace SegfaultInc\Finite\Tests\Stubs;
 
-use SegfaultInc\Finite\Subject as SubjectContract;
+use SegfaultInc\Finite\Subject as BaseSubject;
 
-class Subject implements SubjectContract
+class Subject implements BaseSubject
 {
-    /** @var string */
     private $state;
 
     public function __construct(string $state)
@@ -22,10 +21,5 @@ class Subject implements SubjectContract
     public function setFiniteState(string $state): void
     {
         $this->state = $state;
-    }
-
-    public function applyTransition(string $input): void
-    {
-        //
     }
 }

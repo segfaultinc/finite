@@ -2,9 +2,7 @@
 
 namespace SegfaultInc\Finite\Support;
 
-use Countable;
-
-class Collection implements Countable
+final class Collection
 {
     /** @var array */
     private $items = [];
@@ -14,19 +12,43 @@ class Collection implements Countable
         $this->items = $items;
     }
 
-    public function first(callable $fn = null)
+    public function empty(): bool
+    {
+        return empty($this->items);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
+    }
+
+    public function first()
+    {
+        return $this->items[0] ?? null;
+    }
+
+    public function firstOr(callable $fn)
     {
         return $this->items[0] ?? $fn();
     }
 
-    public function filter(callable $fn): self
+    public function ifEmpty(callable $fn): self
     {
-        return new static(array_values(array_filter($this->items, $fn)));
+        if ($this->empty()) {
+            $fn($this);
+        }
+
+        return $this;
     }
 
     public function map(callable $fn): self
     {
-        return new static(array_values(array_map($fn, $this->items)));
+        return new self(array_values(array_map($fn, $this->items)));
+    }
+
+    public function filter(callable $fn): self
+    {
+        return new self(array_values(array_filter($this->items, $fn)));
     }
 
     public function each(callable $fn): self
@@ -38,14 +60,29 @@ class Collection implements Countable
         return $this;
     }
 
-    public function duplicates(): self
+    public function groupBy(callable $fn): self
     {
-        return new static(array_values(array_unique(array_diff_assoc($this->items, array_unique($this->items)))));
+        $items = [];
+
+        foreach ($this->items as $item) {
+            $key = $fn($item);
+
+            $items[$key] = new self(array_merge(
+                $items[$key]->items ?? [],
+                [$item]
+            ));
+        }
+
+        return new self($items);
     }
 
-    public function intersect(array $other): self
+    public function duplicates(callable $fn): self
     {
-        return new static(array_values(array_intersect($this->items, $other)));
+        return new self(
+            array_keys(array_filter(array_count_values($this->map($fn)->toArray()), function ($count) {
+                return $count > 1;
+            }))
+        );
     }
 
     public function implode(string $glue): string
@@ -53,41 +90,18 @@ class Collection implements Countable
         return implode($glue, $this->items);
     }
 
-    public function count(): int
-    {
-        return count($this->items);
-    }
-
-    public function empty(): bool
-    {
-        return $this->count() == 0;
-    }
-
     public function toArray(): array
     {
         return $this->items;
     }
 
-    public function whenEmpty(callable $fn): self
+    public function dd(): void
     {
-        if ($this->empty()) {
-            $fn($this);
-        }
-
-        return $this;
-    }
-
-    public function whenNotEmpty(callable $fn): self
-    {
-        if (! $this->empty()) {
-            $fn($this);
-        }
-
-        return $this;
+        die(var_dump($this->items));
     }
 
     public static function make(array $items = []): self
     {
-        return new static($items);
+        return new self($items);
     }
 }

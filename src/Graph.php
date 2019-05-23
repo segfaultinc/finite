@@ -2,33 +2,29 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Validator;
 use SegfaultInc\Finite\Support\Collection;
 
 class Graph
 {
-    /** @var StatesCollection */
-    private $states;
+    /** @var array */
+    protected $states = [];
 
-    /** @var Collection */
-    private $transitions = [];
+    /** @var array */
+    protected $transitions = [];
 
-    /** @var bool */
-    private $hooks = true;
-
-    public function __construct()
-    {
-        $this->states = StatesCollection::make([]);
-        $this->transitions = Collection::make([]);
-    }
+    /** @var array */
+    private $hooks = [
+        'applied'  => [],
+        'applying' => [],
+    ];
 
     /**
      * Set states for the graph.
      */
     public function setStates(array $states): self
     {
-        $this->states = Validator::states(
-            StatesCollection::make($states)
-        );
+        $this->states = Validator::states($states);
 
         return $this;
     }
@@ -36,9 +32,23 @@ class Graph
     /**
      * Retrieve all states for the graph.
      */
-    public function getStates(): StatesCollection
+    public function getStates(): array
     {
         return $this->states;
+    }
+
+    /**
+     * Retrieve state by given key.
+     */
+    public function getState(string $key): State
+    {
+        return Collection::make($this->states)
+            ->filter(function (State $state) use ($key) {
+                return $state->key == $key;
+            })
+            ->firstOr(function () use ($key) {
+                throw Exceptions\InvalidStateException::new($key);
+            });
     }
 
     /**
@@ -46,10 +56,7 @@ class Graph
      */
     public function setTransitions(array $transitions): self
     {
-        $this->transitions = Validator::transitions(
-            Collection::make($transitions),
-            $this->states
-        );
+        $this->transitions = Validator::transitions($transitions, $this->states);
 
         return $this;
     }
@@ -57,9 +64,27 @@ class Graph
     /**
      * Retrieve all transition for the graph.
      */
-    public function getTransitions(): Collection
+    public function getTransitions(): array
     {
         return $this->transitions;
+    }
+
+    /**
+     * Initialize given subject.
+     */
+    public function initialize(Subject $subject): void
+    {
+        $initial = Collection::make($this->states)
+            ->filter(function (State $state) {
+                return $state->type == State::INITIAL;
+            })
+            ->firstOr(function () {
+                throw Exceptions\NoInitialStateException::new();
+            });
+
+        $initial->executeEnteringHooks($subject);
+        $subject->setFiniteState($initial->key);
+        $initial->executeEnteredHooks($subject);
     }
 
     /**
@@ -69,48 +94,69 @@ class Graph
     {
         Validator::subject($this->states, $this->transitions, $subject, $input);
 
-        $transition = $this->getTransitions()
-            ->filter(function (Transition $transition) use ($subject, $input) {
+        $transition = Collection::make($this->transitions)
+            ->filter(function ($transition) use ($subject, $input) {
                 return $transition->from() == $subject->getFiniteState()
                     && $transition->input() == $input;
             })
             ->first();
 
-        $from = $this->getStates()->find($transition->from());
-        $to = $this->getStates()->find($transition->to());
+        $from = $this->getState($transition->from());
+        $to = $this->getState($transition->to());
 
-        if ($this->hooks) {
-            $transition->executePreHooks($subject);
-        }
+        $to->executeEnteringHooks($subject);
+        $from->executeLeavingHooks($subject);
+        $this->executeApplyingHooks($subject, $from, $to, $transition);
+        $transition->executePreHooks($subject);
 
         $subject->setFiniteState($to->key);
 
-        if ($this->hooks) {
-            $to->executeEnteringHooks($subject);
-            $from->executeLeavingHooks($subject);
-        }
-
-        if ($this->hooks) {
-            $transition->executePostHooks($subject);
-        }
+        $transition->executePostHooks($subject);
+        $this->executeAppliedHooks($subject, $from, $to, $transition);
+        $from->executeLeftHooks($subject);
+        $to->executeEnteredHooks($subject);
     }
 
     /**
-     * Disable all hooks.
+     * Register hooks for "applied" event.
      */
-    public function disableHooks(): self
+    public function applied(callable $hook): self
     {
-        $this->hooks = false;
+        $this->hooks['applied'][] = $hook;
 
         return $this;
     }
 
     /**
-     * Enable all hooks.
+     * Register hooks for "applying" event.
      */
-    public function enableHooks(): self
+    public function applying(callable $hook): self
     {
-        $this->hooks = true;
+        $this->hooks['applying'][] = $hook;
+
+        return $this;
+    }
+
+    /**
+     * Execute hooks for "applying" event.
+     */
+    public function executeApplyingHooks(Subject $subject, State $from, State $to, Transition $transition): self
+    {
+        foreach ($this->hooks['applying'] as $hook) {
+            $hook($subject, $from, $to, $transition);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Execute hooks for "applied" event.
+     */
+    public function executeAppliedHooks(Subject $subject, State $from, State $to, Transition $transition): self
+    {
+        foreach ($this->hooks['applied'] as $hook) {
+            $hook($subject, $from, $to, $transition);
+        }
 
         return $this;
     }

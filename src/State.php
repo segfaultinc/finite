@@ -18,17 +18,19 @@ class State
     public $label;
 
     /** @var array */
-    public $extra;
+    public $extra = [];
 
     /** @var array */
     private $hooks = [
         'entering' => [],
+        'entered'  => [],
         'leaving'  => [],
+        'left'     => [],
     ];
 
     private function __construct(string $type, string $key)
     {
-        $this->key = $key;
+        $this->key = $this->label = $key;
         $this->type = $type;
     }
 
@@ -63,11 +65,31 @@ class State
     }
 
     /**
+     * Register hook for when after entered this state.
+     */
+    public function entered(callable $hook): self
+    {
+        $this->hooks['entered'][] = $hook;
+
+        return $this;
+    }
+
+    /**
      * Register hook for when leaving this state.
      */
     public function leaving(callable $hook): self
     {
         $this->hooks['leaving'][] = $hook;
+
+        return $this;
+    }
+
+    /**
+     * Register hook for when after left this state.
+     */
+    public function left(callable $hook): self
+    {
+        $this->hooks['left'][] = $hook;
 
         return $this;
     }
@@ -83,6 +105,16 @@ class State
     }
 
     /**
+     * Execute hooks when after entered this state.
+     */
+    public function executeEnteredHooks(Subject $subject): void
+    {
+        foreach ($this->hooks['entered'] as $hook) {
+            $hook($subject);
+        }
+    }
+
+    /**
      * Execute hooks when leaving this state.
      */
     public function executeLeavingHooks(Subject $subject): void
@@ -90,6 +122,24 @@ class State
         foreach ($this->hooks['leaving'] as $hook) {
             $hook($subject);
         }
+    }
+
+    /**
+     * Execute hooks when after left this state.
+     */
+    public function executeLeftHooks(Subject $subject): void
+    {
+        foreach ($this->hooks['left'] as $hook) {
+            $hook($subject);
+        }
+    }
+
+    /**
+     * Return string representation.
+     */
+    public function __toString(): string
+    {
+        return $this->key;
     }
 
     /**

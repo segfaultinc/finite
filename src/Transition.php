@@ -97,7 +97,7 @@ class Transition
     /**
      * Return a string representation of the transition.
      */
-    public function toString(): string
+    public function __toString(): string
     {
         return "{$this->from} --({$this->input})--> {$this->to}";
     }

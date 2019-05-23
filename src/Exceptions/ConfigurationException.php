@@ -16,13 +16,13 @@ class ConfigurationException extends Exception
 
     public static function multipleInitialStates(Collection $initial): self
     {
-        $states = $initial
+        $keys = $initial
             ->map(function (State $state) {
                 return $state->key;
             })
             ->implode(', ');
 
-        return self::new("There must exist a single initial state. Multiple present [$states].");
+        return self::new("There must exist a single initial state. Multiple present [{$keys}].");
     }
 
     public static function duplicateKeys(Collection $duplicates): self
@@ -32,18 +32,12 @@ class ConfigurationException extends Exception
 
     public static function nonDeterministicTransitions(Collection $transitions): self
     {
-        $nonDeterministic = $transitions
-            ->map(function (Transition $transition) {
-                return "[{$transition->toString()}]";
-            })
-            ->implode(', ');
-
         return self::new(
-            'There are %s transitions coming out of [%s] with same input [%s]. Specifically: %s.',
+            'There are %s transitions coming out of [%s] with same input [%s]. Specifically: [%s], [%s].',
             $transitions->count(),
             $transitions->first()->from(),
             $transitions->first()->input(),
-            $nonDeterministic
+            ...$transitions->toArray()
         );
     }
 
@@ -51,7 +45,7 @@ class ConfigurationException extends Exception
     {
         return self::new(
             'Transition [%s] is referring to a non-existing state [%s].',
-            $transition->toString(),
+            $transition,
             $state
         );
     }

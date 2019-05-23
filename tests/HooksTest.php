@@ -69,7 +69,7 @@ class HooksTest extends TestCase
                     ->post($hook2),
             ]);
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $finite->apply($subject = new Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
@@ -104,7 +104,7 @@ class HooksTest extends TestCase
                     ->post($post),
             ]);
 
-        $finite->apply(new Stubs\Subject('new'), 'a');
+        $finite->apply(new Subject('new'), 'a');
 
         $this->assertSame(['pre', 'post'], $results);
     }
@@ -127,7 +127,7 @@ class HooksTest extends TestCase
             ]);
 
         try {
-            $finite->apply($subject = new Stubs\Subject('new'), 'a');
+            $finite->apply($subject = new Subject('new'), 'a');
         } catch (Whoops $e) {
             $this->assertEquals('new', $subject->getFiniteState());
         }
@@ -150,11 +150,64 @@ class HooksTest extends TestCase
                 Transition::new('new', 'foo', 'a'),
             ]);
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $finite->apply($subject = new Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
             ->with($subject);
+    }
+
+    /** @test */
+    public function it_allows_to_register_entered_hooks()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                State::initial('new'),
+                State::normal('foo')
+                    ->entered($hook),
+            ])
+            ->setTransitions([
+                Transition::new('new', 'foo', 'a'),
+            ]);
+
+        $finite->apply($subject = new Subject('new'), 'a');
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
+
+    /** @test */
+    public function entering_and_entered_hooks_are_executed_in_correct_order()
+    {
+        $states = [];
+
+        $entering = function (Subject $subject) use (&$states) {
+            $states[] = 'entering:'.$subject->getFiniteState();
+        };
+
+        $entered = function (Subject $subject) use (&$states) {
+            $states[] = 'entered:'.$subject->getFiniteState();
+        };
+
+        $finite = (new Graph)
+           ->setStates([
+               State::initial('new'),
+               State::normal('foo')
+                   ->entering($entering)
+                   ->entered($entered),
+           ])
+           ->setTransitions([
+               Transition::new('new', 'foo', 'a'),
+           ]);
+
+        $finite->apply($subject = new Subject('new'), 'a');
+
+        $this->assertEquals(['entering:new', 'entered:foo'], $states);
     }
 
     /** @test */
@@ -174,7 +227,7 @@ class HooksTest extends TestCase
                 Transition::new('new', 'foo', 'a'),
             ]);
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $finite->apply($subject = new Subject('new'), 'a');
 
         $hook->shouldHaveBeenCalled()
             ->once()
@@ -182,65 +235,198 @@ class HooksTest extends TestCase
     }
 
     /** @test */
-    public function it_allows_to_disable_and_reenable_hooks()
+    public function it_allows_to_register_left_hooks()
     {
-        $preHook = M::spy(function () {
-            //
-        });
-
-        $postHook = M::spy(function () {
-            //
-        });
-
-        $leavingHook = M::spy(function () {
-            //
-        });
-
-        $enteringHook = M::spy(function () {
+        $hook = M::spy(function () {
             //
         });
 
         $finite = (new Graph)
             ->setStates([
                 State::initial('new')
-                    ->leaving($leavingHook),
-                State::normal('foo')
-                    ->entering($enteringHook),
+                    ->left($hook),
+                State::normal('foo'),
             ])
             ->setTransitions([
-                Transition::new('new', 'foo', 'a')
-                    ->pre($preHook)
-                    ->post($postHook),
+                Transition::new('new', 'foo', 'a'),
             ]);
 
-        $finite->disableHooks();
+        $finite->apply($subject = new Subject('new'), 'a');
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
 
-        $preHook->shouldNotHaveBeenCalled();
-        $postHook->shouldNotHaveBeenCalled();
-        $leavingHook->shouldNotHaveBeenCalled();
-        $enteringHook->shouldNotHaveBeenCalled();
+    /** @test */
+    public function leaving_and_left_hooks_are_executed_in_correct_order()
+    {
+        $states = [];
 
-        $finite->enableHooks();
+        $leaving = function (Subject $subject) use (&$states) {
+            $states[] = 'leaving:'.$subject->getFiniteState();
+        };
 
-        $finite->apply($subject = new Stubs\Subject('new'), 'a');
+        $left = function (Subject $subject) use (&$states) {
+            $states[] = 'left:'.$subject->getFiniteState();
+        };
 
-        $preHook->shouldHaveBeenCalled()
-                ->once()
-                ->with($subject);
+        $finite = (new Graph)
+           ->setStates([
+               State::initial('new')
+                   ->leaving($leaving)
+                   ->left($left),
+               State::normal('foo'),
+           ])
+           ->setTransitions([
+               Transition::new('new', 'foo', 'a'),
+           ]);
 
-        $postHook->shouldHaveBeenCalled()
-                ->once()
-                ->with($subject);
+        $finite->apply($subject = new Subject('new'), 'a');
 
-        $leavingHook->shouldHaveBeenCalled()
-                ->once()
-                ->with($subject);
+        $this->assertEquals(['leaving:new', 'left:foo'], $states);
+    }
 
-        $enteringHook->shouldHaveBeenCalled()
-                ->once()
-                ->with($subject);
+    /** @test */
+    public function it_allows_to_register_global_transition_applying_hooks()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                $new = State::initial('new'),
+                $foo = State::normal('foo'),
+            ])
+            ->setTransitions([
+                $new_to_foo = Transition::new('new', 'foo', 'a'),
+            ])
+            ->applying($hook);
+
+        $finite->apply($subject = new Subject('new'), 'a');
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject, $new, $foo, $new_to_foo);
+    }
+
+    /** @test */
+    public function it_allows_to_register_global_transition_applied_hooks()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                $new = State::initial('new'),
+                $foo = State::normal('foo'),
+            ])
+            ->setTransitions([
+                $new_to_foo = Transition::new('new', 'foo', 'a'),
+            ])
+            ->applied($hook);
+
+        $finite->apply($subject = new Subject('new'), 'a');
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject, $new, $foo, $new_to_foo);
+    }
+
+    /** @test */
+    public function applying_and_applied_hooks_are_executed_in_correct_order()
+    {
+        $states = [];
+
+        $applying = function (Subject $subject, State $from, State $to) use (&$states) {
+            $states[] = 'applying:'.$subject->getFiniteState();
+        };
+
+        $applied = function (Subject $subject, State $from, State $to) use (&$states) {
+            $states[] = 'applied:'.$subject->getFiniteState();
+        };
+
+        $finite = (new Graph)
+            ->setStates([
+                State::initial('new'),
+                State::normal('foo'),
+            ])
+            ->setTransitions([
+                Transition::new('new', 'foo', 'a'),
+            ])
+            ->applying($applying)
+            ->applied($applied);
+
+        $finite->apply($subject = new Subject('new'), 'a');
+
+        $this->assertEquals(['applying:new', 'applied:foo'], $states);
+    }
+
+    /** @test */
+    public function entering_hooks_are_executed_when_initializing()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                State::initial('new')
+                    ->entering($hook),
+            ]);
+
+        $finite->initialize($subject = new Subject('[empty]'));
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
+
+    /** @test */
+    public function entered_hooks_are_executed_when_initializing()
+    {
+        $hook = M::spy(function () {
+            //
+        });
+
+        $finite = (new Graph)
+            ->setStates([
+                State::initial('new')
+                    ->entered($hook),
+            ]);
+
+        $finite->initialize($subject = new Subject('[empty]'));
+
+        $hook->shouldHaveBeenCalled()
+            ->once()
+            ->with($subject);
+    }
+
+    /** @test */
+    public function entering_and_entered_hooks_are_executed_in_correct_order_when_initializing()
+    {
+        $states = [];
+
+        $entering = function (Subject $subject) use (&$states) {
+            $states[] = 'entering:'.$subject->getFiniteState();
+        };
+
+        $entered = function (Subject $subject) use (&$states) {
+            $states[] = 'entered:'.$subject->getFiniteState();
+        };
+
+        $finite = (new Graph)
+           ->setStates([
+               State::initial('new')
+                    ->entering($entering)
+                    ->entered($entered),
+           ]);
+
+        $finite->initialize($subject = new Subject('[empty]'));
+
+        $this->assertEquals(['entering:[empty]', 'entered:new'], $states);
     }
 }
 

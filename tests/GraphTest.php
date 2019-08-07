@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
 use SegfaultInc\Finite\Exceptions\InvalidStateException;
 
-class FiniteTest extends TestCase
+class GraphTest extends TestCase
 {
     /** @test */
     public function can_register_states()

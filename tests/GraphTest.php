@@ -57,8 +57,8 @@ class GraphTest extends TestCase
                 State::final('c'),
             ])
             ->setTransitions([
-                $one = Transition::new('a', 'b', 0),
-                $two = Transition::new('b', 'c', 1),
+                $one = Transition::new('a', 'b', 'x'),
+                $two = Transition::new('b', 'c', 'x'),
             ]);
 
         $this->assertCount(2, $machine->getTransitions());

@@ -103,6 +103,20 @@ class Transition
     }
 
     /**
+     * Clone the transition, potentially replace from/to states.
+     */
+    public function clone(?string $from = null, ?string $to = null, ?string $input = null): self
+    {
+        $clone = clone $this;
+
+        $clone->from  = $from ?: $clone->from;
+        $clone->to    = $to ?: $clone->to;
+        $clone->input = $input ?: $clone->input;
+
+        return $clone;
+    }
+
+    /**
      * Create new transition.
      */
     public static function new(string $from, string $to, string $input): self

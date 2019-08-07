@@ -61,6 +61,12 @@ class Graph
      */
     public function setTransitions(array $transitions): self
     {
+        $transitions = Collection::make($transitions)
+            ->map(function (Transition $transition) {
+                return Variations::transition($transition, $this->states);
+            })
+            ->toArray();
+
         $this->transitions = Validator::transitions($transitions, $this->states);
 
         return $this;

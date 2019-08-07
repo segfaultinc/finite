@@ -24,6 +24,7 @@ class StateTest extends TestCase
         $bar->executeEnteringHooks(new Subject('foo'));
 
         $this->assertEquals('bar', $bar->key);
+        $this->assertEquals('foo', $bar->variationKey);
         $this->assertEquals('Foo', $bar->label);
         $this->assertTrue($ran);
     }

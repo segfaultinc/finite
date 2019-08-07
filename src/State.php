@@ -20,6 +20,9 @@ class State
     /** @var array|null */
     public $variations = null;
 
+    /** @var string|null */
+    public $variationKey = null;
+
     /** @var array */
     public $extra = [];
 
@@ -163,6 +166,7 @@ class State
         $clone = clone $this;
 
         $clone->key = $key;
+        $clone->variationKey = $this->key;
 
         return $clone;
     }

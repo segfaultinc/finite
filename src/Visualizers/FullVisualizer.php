@@ -1,13 +1,14 @@
 <?php
 
-namespace SegfaultInc\Finite\Support;
+namespace SegfaultInc\Finite\Visualizers;
 
 use Graphp\GraphViz\GraphViz;
 use SegfaultInc\Finite\Graph;
 use SegfaultInc\Finite\State;
 use Fhaculty\Graph\Graph as VisualGraph;
+use SegfaultInc\Finite\Support\Collection;
 
-class Visualizer
+class FullVisualizer
 {
     public static function visualize(Graph $finite): void
     {

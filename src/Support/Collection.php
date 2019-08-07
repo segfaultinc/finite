@@ -101,6 +101,11 @@ final class Collection
         return implode($glue, $this->items);
     }
 
+    public function flatten(): self
+    {
+        return new self(array_reduce($this->items, 'array_merge', []));
+    }
+
     public function toArray(): array
     {
         return $this->items;

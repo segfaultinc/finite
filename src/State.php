@@ -143,6 +143,18 @@ class State
     }
 
     /**
+     * Clone the state and provide new key.
+     */
+    public function clone(string $key): self
+    {
+        $clone = clone $this;
+
+        $clone->key = $key;
+
+        return $clone;
+    }
+
+    /**
      * Create new initial state.
      */
     public static function initial(string $key): self

@@ -17,6 +17,9 @@ class State
     /** @var string */
     public $label;
 
+    /** @var array|null */
+    public $variations = null;
+
     /** @var array */
     public $extra = [];
 
@@ -40,6 +43,16 @@ class State
     public function label(string $label): self
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Set extra properties for the state.
+     */
+    public function variations(array $variations): self
+    {
+        $this->variations = $variations;
 
         return $this;
     }

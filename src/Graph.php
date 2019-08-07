@@ -24,7 +24,12 @@ class Graph
      */
     public function setStates(array $states): self
     {
-        $this->states = Validator::states($states);
+        $this->states = Collection::make(Validator::states($states))
+            ->map(function (State $state) {
+                return Variations::from($state);
+            })
+            ->flatten()
+            ->toArray();
 
         return $this;
     }

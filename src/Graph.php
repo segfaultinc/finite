@@ -26,7 +26,7 @@ class Graph
     {
         $this->states = Collection::make(Validator::states($states))
             ->map(function (State $state) {
-                return Variations::from($state);
+                return Variations::state($state);
             })
             ->flatten()
             ->toArray();

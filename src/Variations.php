@@ -6,7 +6,7 @@ use SegfaultInc\Finite\Support\Collection;
 
 class Variations
 {
-    public static function from(State $state): array
+    public static function state(State $state): array
     {
         if (! $state->variations) {
             return [$state];

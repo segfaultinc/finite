@@ -3,13 +3,24 @@
 namespace SegfaultInc\Finite;
 
 use SegfaultInc\Finite\Support\Collection;
+use SegfaultInc\Finite\Exceptions\InvalidStateException;
 
 class Variations
 {
-    public static function state(State $state): array
+    public static function state(State $state, array $states): array
     {
         if (! $state->variations) {
             return [$state];
+        }
+
+        foreach ($state->variations  as $variation) {
+            Collection::make($states)
+                ->filter(function (State $state) use ($variation) {
+                    return $state->key == $variation;
+                })
+                ->ifEmpty(function () use ($variation) {
+                    throw InvalidStateException::new($variation);
+                });
         }
 
         return array_map(function (string $variation) use ($state) {

@@ -6,6 +6,7 @@ use SegfaultInc\Finite\Graph;
 use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
+use SegfaultInc\Finite\Exceptions\InvalidStateException;
 
 class VariationsTest extends TestCase
 {
@@ -16,12 +17,16 @@ class VariationsTest extends TestCase
             ->setStates([
                 State::initial('init'),
 
+                State::normal('foo'),
+                State::normal('bar'),
+                State::normal('baz'),
+
                 State::normal('progress')
                     ->variations(['foo', 'bar', 'baz']),
             ]);
 
-        $this->assertCount(4, $graph->getStates());
-        $this->assertEquals(['init', 'progress:foo', 'progress:bar', 'progress:baz'], array_map(function (State $state) {
+        $this->assertCount(7, $graph->getStates());
+        $this->assertEquals(['init', 'foo', 'bar', 'baz', 'progress:foo', 'progress:bar', 'progress:baz'], array_map(function (State $state) {
             return $state->key;
         }, $graph->getStates()));
     }
@@ -58,5 +63,19 @@ class VariationsTest extends TestCase
             Transition::new('canceled:bar', 'bar', 'open'),
             Transition::new('canceled:baz', 'baz', 'open'),
         ], $graph->getTransitions());
+    }
+
+    /** @test */
+    public function variations_must_be_referring_to_existing_states()
+    {
+        $this->expectException(InvalidStateException::class);
+
+        (new Graph)
+            ->setStates([
+                State::initial('init'),
+
+                State::normal('in_progress')
+                    ->variations(['foo', 'bar', 'baz']),
+            ]);
     }
 }

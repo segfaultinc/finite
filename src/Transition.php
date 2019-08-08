@@ -13,6 +13,9 @@ class Transition
     /** @var string */
     protected $input;
 
+    /** @var string|null */
+    protected $inverseInput = null;
+
     /** @var array */
     protected $hooks = [
         'pre'  => [],
@@ -51,6 +54,38 @@ class Transition
     public function input(): string
     {
         return $this->input;
+    }
+
+    /**
+     * Set input for the inverse transition.
+     */
+    public function inverse(string $input): self
+    {
+        $this->inverseInput = $input;
+
+        return $this;
+    }
+
+    /**
+     * @internal
+     *
+     * Invert the transition, using the previously set `inverseInput` key.
+     */
+    public function invert(): ?Transition
+    {
+        if (! $this->inverseInput) {
+            return null;
+        }
+
+        $clone = $this->clone(
+            $this->to(),
+            $this->from(),
+            $this->inverseInput
+        );
+
+        $clone->inverseInput = null;
+
+        return $clone;
     }
 
     /**

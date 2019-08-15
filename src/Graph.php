@@ -63,14 +63,6 @@ class Graph
     {
         $transitions = Collection::make($transitions)
             ->map(function (Transition $transition) {
-                if ($inverse = $transition->invert()) {
-                    return [$transition, $inverse];
-                }
-
-                return [$transition];
-            })
-            ->flatten()
-            ->map(function (Transition $transition) {
                 return Variations::transition($transition, $this->states);
             })
             ->toArray();

@@ -25,7 +25,7 @@ class Transition
     /**
      * Create new transition.
      */
-    private function __construct(string $from, string $to, string $input)
+    protected function __construct(string $from, string $to, string $input)
     {
         $this->from = $from;
         $this->to = $to;
@@ -54,38 +54,6 @@ class Transition
     public function input(): string
     {
         return $this->input;
-    }
-
-    /**
-     * Set input for the inverse transition.
-     */
-    public function inverse(string $input): self
-    {
-        $this->inverseInput = $input;
-
-        return $this;
-    }
-
-    /**
-     * @internal
-     *
-     * Invert the transition, using the previously set `inverseInput` key.
-     */
-    public function invert(): ?Transition
-    {
-        if (! $this->inverseInput) {
-            return null;
-        }
-
-        $clone = $this->clone(
-            $this->to(),
-            $this->from(),
-            $this->inverseInput
-        );
-
-        $clone->inverseInput = null;
-
-        return $clone;
     }
 
     /**

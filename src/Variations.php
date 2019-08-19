@@ -13,7 +13,7 @@ class Variations
             return [$state];
         }
 
-        foreach ($state->variations  as $variation) {
+        foreach ($state->variations as $variation) {
             Collection::make($states)
                 ->filter(function (State $state) use ($variation) {
                     return $state->key == $variation;

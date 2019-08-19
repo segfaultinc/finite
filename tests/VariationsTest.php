@@ -78,4 +78,30 @@ class VariationsTest extends TestCase
                     ->variations(['foo', 'bar', 'baz']),
             ]);
     }
+
+    /** @test */
+    public function variations_referring_to_variations()
+    {
+        $graph = (new Graph)
+            ->setStates([
+                State::initial('init'),
+
+                State::normal('baz'),
+
+                State::normal('bar')
+                    ->variations(['baz']),
+
+                State::normal('progress')
+                    ->variations(['bar:baz']),
+            ]);
+
+        $this->assertEquals([
+            'init',
+            'baz',
+            'bar:baz',
+            'progress:bar:baz',
+        ], array_map(function (State $state) {
+            return $state->key;
+        }, $graph->getStates()));
+    }
 }

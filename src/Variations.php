@@ -16,7 +16,11 @@ class Variations
         foreach ($state->variations as $variation) {
             Collection::make($states)
                 ->filter(function (State $state) use ($variation) {
-                    return $state->key == $variation;
+                    $variationStates = array_map(function ($variation) use ($state) {
+                        return "{$state->key}:{$variation}";
+                    }, $state->variations ?: []);
+
+                    return $state->key == $variation || in_array($variation, $variationStates);
                 })
                 ->ifEmpty(function () use ($variation) {
                     throw InvalidStateException::new($variation);

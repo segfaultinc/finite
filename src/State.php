@@ -17,12 +17,6 @@ class State
     /** @var string */
     public $label;
 
-    /** @var array|null */
-    public $variations = null;
-
-    /** @var string|null */
-    public $variationKey = null;
-
     /** @var array */
     public $extra = [];
 
@@ -46,16 +40,6 @@ class State
     public function label(string $label): self
     {
         $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * Set extra properties for the state.
-     */
-    public function variations(array $variations): self
-    {
-        $this->variations = $variations;
 
         return $this;
     }
@@ -156,19 +140,6 @@ class State
     public function __toString(): string
     {
         return $this->key;
-    }
-
-    /**
-     * Clone the state and provide new key.
-     */
-    public function clone(string $key): self
-    {
-        $clone = clone $this;
-
-        $clone->key = $key;
-        $clone->variationKey = $this->key;
-
-        return $clone;
     }
 
     /**

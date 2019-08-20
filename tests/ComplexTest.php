@@ -28,8 +28,7 @@ class ComplexTest extends TestCase
 
                 State::final('done'),
 
-                State::final('canceled')
-                    ->variations(['in_progress']),
+                State::final('canceled'),
             ])
             ->setTransitions([
                 Transition::new('init', 'in_progress', 'progress'),
@@ -53,7 +52,7 @@ class ComplexTest extends TestCase
         $this->assertEquals('in_progress', $this->subject->getFiniteState());
 
         $this->graph->apply($this->subject, 'cancel');
-        $this->assertEquals('canceled:in_progress', $this->subject->getFiniteState());
+        $this->assertEquals('canceled', $this->subject->getFiniteState());
 
         $this->graph->apply($this->subject, 'open');
         $this->assertEquals('in_progress', $this->subject->getFiniteState());

@@ -9,6 +9,9 @@ use SegfaultInc\Finite\Exceptions\InvalidInputException;
 use SegfaultInc\Finite\Exceptions\ConfigurationException;
 use SegfaultInc\Finite\Exceptions\SubjectInInvalidStateException;
 
+/**
+ * @internal
+ */
 class Validator
 {
     public static function states(array $states): array

@@ -24,12 +24,7 @@ class Graph
      */
     public function setStates(array $states): self
     {
-        $this->states = Collection::make(Validator::states($states))
-            ->map(function (State $state) use ($states) {
-                return Variations::state($state, $states);
-            })
-            ->flatten()
-            ->toArray();
+        $this->states = Validator::states($states);
 
         return $this;
     }
@@ -61,12 +56,6 @@ class Graph
      */
     public function setTransitions(array $transitions): self
     {
-        $transitions = Collection::make($transitions)
-            ->map(function (Transition $transition) {
-                return Variations::transition($transition, $this->states);
-            })
-            ->toArray();
-
         $this->transitions = Validator::transitions($transitions, $this->states);
 
         return $this;

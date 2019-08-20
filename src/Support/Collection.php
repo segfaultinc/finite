@@ -2,6 +2,9 @@
 
 namespace SegfaultInc\Finite\Support;
 
+/**
+ * @internal
+ */
 final class Collection
 {
     /** @var array */

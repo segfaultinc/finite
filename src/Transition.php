@@ -13,9 +13,6 @@ class Transition
     /** @var string */
     protected $input;
 
-    /** @var string|null */
-    protected $inverseInput = null;
-
     /** @var array */
     protected $hooks = [
         'pre'  => [],
@@ -103,20 +100,6 @@ class Transition
     public function __toString(): string
     {
         return "{$this->from} --({$this->input})--> {$this->to}";
-    }
-
-    /**
-     * Clone the transition, potentially replace from/to states.
-     */
-    public function clone(?string $from = null, ?string $to = null, ?string $input = null): self
-    {
-        $clone = clone $this;
-
-        $clone->from  = $from ?: $clone->from;
-        $clone->to    = $to ?: $clone->to;
-        $clone->input = $input ?: $clone->input;
-
-        return $clone;
     }
 
     /**

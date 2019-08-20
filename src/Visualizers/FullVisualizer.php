@@ -10,7 +10,7 @@ use SegfaultInc\Finite\Support\Collection;
 
 class FullVisualizer
 {
-    public static function visualize(Graph $finite): void
+    public function visualize(Graph $finite): void
     {
         $graph = new VisualGraph;
 

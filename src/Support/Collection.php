@@ -106,7 +106,13 @@ final class Collection
 
     public function flatten(): self
     {
-        return new self(array_reduce($this->items, 'array_merge', []));
+        return new self(array_reduce($this->items, function (array $xs, $x) {
+            if (! is_array($x)) {
+                return array_merge($xs, [$x]);
+            }
+
+            return array_merge($xs, $x);
+        }, []));
     }
 
     public function toArray(): array

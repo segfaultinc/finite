@@ -65,4 +65,61 @@ class GraphTest extends TestCase
         $this->assertSame($one, $machine->getTransitions()[0]);
         $this->assertSame($two, $machine->getTransitions()[1]);
     }
+
+    /**
+     * @test
+     *
+     * This "feature" exists so "state variations" can be easily implemented in user land.
+     *
+     * eg.:
+     *   [
+     *     State::new('state:foo'),
+     *     State::new('state:bar'),
+     *   ]
+     *
+     * This can be represented as:
+     *   [
+     *     array_map(function (string $key) {
+     *       return State::new("state:{$key}");
+     *     }, ['foo', 'bar'])
+     *   ]
+     *
+     * This technique helps when there are a lot of state variations and "current:previous" syntax is used.
+     *
+     * However, this feature will be removed once https://wiki.php.net/rfc/spread_operator_for_array can be used.
+     */
+    public function can_register_states_and_transitions_using_nested_arrays()
+    {
+        $machine = (new Graph)
+            ->setStates([
+                $init = State::initial('init'),
+
+                [
+                    $foo = State::normal('foo'),
+                    $bar = State::normal('bar'),
+                ],
+
+                $done = State::final('done'),
+            ])
+            ->setTransitions([
+                $x = Transition::new('init', 'foo', 'x'),
+
+                [
+                    $y = Transition::new('foo', 'bar', 'y'),
+                ],
+
+                $z = Transition::new('bar', 'done', 'z'),
+            ]);
+
+        $this->assertCount(4, $machine->getStates());
+        $this->assertSame($init, $machine->getStates()[0]);
+        $this->assertSame($foo, $machine->getStates()[1]);
+        $this->assertSame($bar, $machine->getStates()[2]);
+        $this->assertSame($done, $machine->getStates()[3]);
+
+        $this->assertCount(3, $machine->getTransitions());
+        $this->assertSame($x, $machine->getTransitions()[0]);
+        $this->assertSame($y, $machine->getTransitions()[1]);
+        $this->assertSame($z, $machine->getTransitions()[2]);
+    }
 }

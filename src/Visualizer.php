@@ -6,7 +6,7 @@ use Graphp\GraphViz\GraphViz;
 use Fhaculty\Graph\Graph as VisualGraph;
 use SegfaultInc\Finite\Support\Collection;
 
-class FullVisualizer
+class Visualizer
 {
     public function visualize(Graph $finite): void
     {

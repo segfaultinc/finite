@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: install dependencies
+      - name: Install dependencies
         run: composer install
-      - name: run tests
-        run: vendor/bin/phpunit
+      - name: Run tests
+        run: vendor/bin/phpunit --colors

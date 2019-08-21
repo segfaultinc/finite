@@ -4,10 +4,10 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v1
-      - name: php test
-        run: php -v
+      - name: install dependencies
+        run: composer install
+      - name: run tests
+        run: vendor/bin/phpunit

@@ -2,6 +2,9 @@
 
 namespace SegfaultInc\Finite\Support;
 
+use Closure;
+use Opis\Closure\SerializableClosure;
+
 /**
  * @internal
  */
@@ -16,7 +19,7 @@ class Hooks
             $this->hooks[$event] = [];
         }
 
-        $this->hooks[$event][] = $hook;
+        $this->hooks[$event][] = SerializableClosure::from(Closure::fromCallable($hook));
     }
 
     public function execute(string $event, ...$args): void

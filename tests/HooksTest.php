@@ -7,6 +7,7 @@ use SegfaultInc\Finite\Graph;
 use SegfaultInc\Finite\State;
 use PHPUnit\Framework\TestCase;
 use SegfaultInc\Finite\Transition;
+use SegfaultInc\Finite\Support\Hooks;
 use SegfaultInc\Finite\Tests\Stubs\Subject;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -397,9 +398,45 @@ class HooksTest extends TestCase
 
         $this->assertEquals(['entering:[empty]', 'entered:new'], $states);
     }
+
+    /** @test */
+    public function objects_with_hooks_can_be_serialized()
+    {
+        $this->expectException('Exception');
+        $this->expectExceptionMessage('serialized foo');
+
+        $object = new ObjectWithHooks;
+
+        $object->register('foo', function () {
+            throw new \Exception('serialized foo');
+        });
+
+        unserialize(serialize($object))->execute('foo');
+    }
 }
 
 class Whoops extends \Exception
 {
     //
+}
+
+class ObjectWithHooks
+{
+    /** @var Hooks */
+    private $hooks;
+
+    public function __construct()
+    {
+        $this->hooks = new Hooks;
+    }
+
+    public function register(string $key, callable $hook): void
+    {
+        $this->hooks->register($key, $hook);
+    }
+
+    public function execute(string $key)
+    {
+        $this->hooks->execute($key);
+    }
 }

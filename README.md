@@ -22,7 +22,7 @@ class Order extends Model implements Subject
             'status' => $state,
         ]);
     }
-    
+
     public function getFiniteState($state)
     {
         return $this->status;
@@ -35,13 +35,13 @@ class Order extends Model implements Subject
 ```php
 (new Graph)
     ->setStates([
-    
+
         State::initial('new')
             ->label('New')
             ->leaving(function (Order $order) {
                 // This is executed every time the `in_progress` is **transitioned from**.
                 // Useful if you want to do something that is "state" dependent
-                
+
                 $order->update([
                     'started_at' => now()
                 ]);
@@ -49,34 +49,34 @@ class Order extends Model implements Subject
 
         State::normal('in_progress')
             ->label('In Progress'),
-        
+
         State::final('finished')
             ->label('Finised'),
-            
+
         State::final('canceled')
             ->label('Canceled')
             ->entering(function (Order $order) {
                 // If you transition to "canceled" state from multiple states,
                 // this is the place to perform the common logic
             }),
-            
+
     ])
     ->setTransitions([
-    
-        Transition::new('new', 'in_progress', 'progress')
+
+        Transition::make('new', 'in_progress', 'progress')
             ->pre(function (Order $order) {
                 if ($order->validate()) {
                     throw new OrderValidationException('When an exception is thrown in "pre" hook, the transition is not applied');
                 }
             }),
-        
-        Transition::new('in_progress', 'finished', 'progress'),
-        
-        Transition::new('in_progress', 'canceled', 'cancel')
+
+        Transition::make('in_progress', 'finished', 'progress'),
+
+        Transition::make('in_progress', 'canceled', 'cancel')
             ->post(function (Order $order) {
                 $order->user->notify(new YourOrderWasCanceled);
             }),
-        
+
     ]);
 ```
 

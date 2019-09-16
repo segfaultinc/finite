@@ -9,49 +9,72 @@ class State
     const FINAL = 'FINAL';
 
     /** @var string */
-    public $key;
+    protected $key;
 
     /** @var string */
-    public $type;
+    protected $type;
 
     /** @var string */
-    public $label;
+    protected $label;
 
     /** @var array */
-    public $extra = [];
+    protected $extra = [];
 
     /** @var array */
-    private $hooks = [
+    protected $hooks = [
         'entering' => [],
         'entered'  => [],
         'leaving'  => [],
         'left'     => [],
     ];
 
-    private function __construct(string $type, string $key)
+    private function __construct(string $type, string $key, string $label = null)
     {
-        $this->key = $this->label = $key;
+        $this->key = $key;
         $this->type = $type;
+        $this->label = $label ?: $key;
     }
 
     /**
-     * Set label for the state.
+     * Get state key.
      */
-    public function label(string $label): self
+    public function getKey(): string
     {
-        $this->label = $label;
-
-        return $this;
+        return $this->key;
     }
 
     /**
-     * Set extra properties for the state.
+     * Get state type.
      */
-    public function extra(array $extra): self
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get state label.
+     */
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    /**
+     * Set extra properties.
+     */
+    public function setExtra(array $extra): self
     {
         $this->extra = $extra;
 
         return $this;
+    }
+
+    /**
+     * Get extra properties.
+     */
+    public function getExtra(): array
+    {
+        return $this->extra;
     }
 
     /**
@@ -135,34 +158,26 @@ class State
     }
 
     /**
-     * Return string representation.
-     */
-    public function __toString(): string
-    {
-        return $this->key;
-    }
-
-    /**
      * Create new initial state.
      */
-    public static function initial(string $key): self
+    public static function initial(string $key, string $label = null): self
     {
-        return new self(self::INITIAL, $key);
+        return new self(self::INITIAL, $key, $label);
     }
 
     /**
      * Create new normal state.
      */
-    public static function normal(string $key): self
+    public static function normal(string $key, string $label = null): self
     {
-        return new self(self::NORMAL, $key);
+        return new self(self::NORMAL, $key, $label);
     }
 
     /**
      * Create new final state.
      */
-    public static function final(string $key): self
+    public static function final(string $key, string $label = null): self
     {
-        return new self(self::FINAL, $key);
+        return new self(self::FINAL, $key, $label);
     }
 }

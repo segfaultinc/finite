@@ -25,16 +25,14 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a')
-                    ->pre($hook)
-                    ->pre($hook2),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a')
+                ->pre($hook)
+                ->pre($hook2),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -58,16 +56,14 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a')
-                    ->post($hook)
-                    ->post($hook2),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a')
+                ->post($hook)
+                ->post($hook2),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -93,16 +89,14 @@ class HooksTest extends TestCase
             $results[] = 'post';
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a')
-                    ->pre($pre)
-                    ->post($post),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a')
+                ->pre($pre)
+                ->post($post),
+        ]);
 
         $finite->apply(new Subject('new'), 'a');
 
@@ -116,15 +110,13 @@ class HooksTest extends TestCase
             throw new Whoops('¯\_(ツ)_/¯');
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a')
-                    ->pre($pre),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a')
+                ->pre($pre),
+        ]);
 
         try {
             $finite->apply($subject = new Subject('new'), 'a');
@@ -140,15 +132,13 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo')
-                    ->entering($hook),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo')
+                ->entering($hook),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -164,15 +154,13 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo')
-                    ->entered($hook),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-            ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo')
+                ->entered($hook),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -194,16 +182,14 @@ class HooksTest extends TestCase
             $states[] = 'entered:'.$subject->getFiniteState();
         };
 
-        $finite = (new Graph)
-           ->setStates([
-               State::initial('new'),
-               State::normal('foo')
-                   ->entering($entering)
-                   ->entered($entered),
-           ])
-           ->setTransitions([
-               Transition::new('new', 'foo', 'a'),
-           ]);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo')
+                ->entering($entering)
+                ->entered($entered),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -217,15 +203,13 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new')
-                    ->leaving($hook),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-            ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->leaving($hook),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -241,15 +225,13 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new')
-                    ->left($hook),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-            ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->left($hook),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -271,16 +253,14 @@ class HooksTest extends TestCase
             $states[] = 'left:'.$subject->getFiniteState();
         };
 
-        $finite = (new Graph)
-           ->setStates([
-               State::initial('new')
-                   ->leaving($leaving)
-                   ->left($left),
-               State::normal('foo'),
-           ])
-           ->setTransitions([
-               Transition::new('new', 'foo', 'a'),
-           ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->leaving($leaving)
+                ->left($left),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ]);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -294,15 +274,12 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
-            ])
-            ->setTransitions([
-                $new_to_foo = Transition::new('new', 'foo', 'a'),
-            ])
-            ->applying($hook);
+        $finite = Graph::make([
+            $new = State::initial('new'),
+            $foo = State::normal('foo'),
+        ], [
+            $new_to_foo = Transition::make('new', 'foo', 'a'),
+        ])->applying($hook);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -318,15 +295,12 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                $new = State::initial('new'),
-                $foo = State::normal('foo'),
-            ])
-            ->setTransitions([
-                $new_to_foo = Transition::new('new', 'foo', 'a'),
-            ])
-            ->applied($hook);
+        $finite = Graph::make([
+            $new = State::initial('new'),
+            $foo = State::normal('foo'),
+        ], [
+            $new_to_foo = Transition::make('new', 'foo', 'a'),
+        ])->applied($hook);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -348,16 +322,14 @@ class HooksTest extends TestCase
             $states[] = 'applied:'.$subject->getFiniteState();
         };
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-            ])
-            ->applying($applying)
-            ->applied($applied);
+        $finite = Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+        ])
+        ->applying($applying)
+        ->applied($applied);
 
         $finite->apply($subject = new Subject('new'), 'a');
 
@@ -371,11 +343,10 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new')
-                    ->entering($hook),
-            ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->entering($hook),
+        ], []);
 
         $finite->initialize($subject = new Subject('[empty]'));
 
@@ -391,11 +362,10 @@ class HooksTest extends TestCase
             //
         });
 
-        $finite = (new Graph)
-            ->setStates([
-                State::initial('new')
-                    ->entered($hook),
-            ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->entered($hook),
+        ], []);
 
         $finite->initialize($subject = new Subject('[empty]'));
 
@@ -417,12 +387,11 @@ class HooksTest extends TestCase
             $states[] = 'entered:'.$subject->getFiniteState();
         };
 
-        $finite = (new Graph)
-           ->setStates([
-               State::initial('new')
-                    ->entering($entering)
-                    ->entered($entered),
-           ]);
+        $finite = Graph::make([
+            State::initial('new')
+                ->entering($entering)
+                ->entered($entered),
+        ], []);
 
         $finite->initialize($subject = new Subject('[empty]'));
 

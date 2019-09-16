@@ -20,25 +20,23 @@ class ComplexTest extends TestCase
     {
         parent::setUp();
 
-        $this->graph = (new Graph)
-            ->setStates([
-                State::initial('init'),
+        $this->graph = Graph::make([
+            State::initial('init'),
 
-                State::normal('in_progress'),
+            State::normal('in_progress'),
 
-                State::final('done'),
+            State::final('done'),
 
-                State::final('canceled'),
-            ])
-            ->setTransitions([
-                Transition::new('init', 'in_progress', 'progress'),
+            State::final('canceled'),
+        ], [
+            Transition::make('init', 'in_progress', 'progress'),
 
-                Transition::new('in_progress', 'canceled', 'cancel'),
+            Transition::make('in_progress', 'canceled', 'cancel'),
 
-                Transition::new('canceled', 'in_progress', 'open'),
+            Transition::make('canceled', 'in_progress', 'open'),
 
-                Transition::new('in_progress', 'done', 'finish'),
-            ]);
+            Transition::make('in_progress', 'done', 'finish'),
+        ]);
 
         $this->subject = new Subject('');
     }

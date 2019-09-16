@@ -13,25 +13,25 @@ class Visualizer
         $graph = new VisualGraph;
 
         $vertexes = Collection::make($finite->getStates())
-            ->mapWithKeys(function ($state) use ($graph) {
-                $vertex = $graph->createVertex($state->key);
+            ->mapWithKeys(function (State $state) use ($graph) {
+                $vertex = $graph->createVertex($state->getKey());
 
-                if ($state->type == State::INITIAL) {
+                if ($state->getType() == State::INITIAL) {
                     $vertex->setAttribute('graphviz.color', 'blue');
-                } elseif ($state->type == State::FINAL) {
+                } elseif ($state->getType() == State::FINAL) {
                     $vertex->setAttribute('graphviz.color', 'red');
                 }
 
-                return [$state->key => $vertex];
+                return [$state->getKey() => $vertex];
             });
 
         Collection::make($finite->getTransitions())
-            ->each(function ($transition) use ($graph, $vertexes) {
-                $from = $vertexes->toArray()[$transition->from()];
-                $to = $vertexes->toArray()[$transition->to()];
+            ->each(function (Transition $transition) use ($graph, $vertexes) {
+                $from = $vertexes->toArray()[$transition->getFrom()];
+                $to = $vertexes->toArray()[$transition->getTo()];
 
                 $edge = $from->createEdgeTo($to);
-                $edge->setAttribute('graphviz.label', $transition->input());
+                $edge->setAttribute('graphviz.label', $transition->getInput());
             });
 
         (new GraphViz)->display($graph);

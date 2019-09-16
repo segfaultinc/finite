@@ -18,7 +18,7 @@ class Validator
     {
         $initial = Collection::make($states)
             ->filter(function (State $state) {
-                return $state->type == State::INITIAL;
+                return $state->getType() == State::INITIAL;
             });
 
         if ($initial->count() == 0) {
@@ -31,7 +31,7 @@ class Validator
 
         $duplicates = Collection::make($states)
             ->duplicates(function (State $state) {
-                return $state->key;
+                return $state->getKey();
             });
 
         if ($duplicates->count() > 0) {
@@ -44,11 +44,11 @@ class Validator
     public static function transitions(array $transitions, array $states): array
     {
         foreach ($transitions as $transition) {
-            [$from, $to] = [$transition->from(), $transition->to()];
+            [$from, $to] = [$transition->getFrom(), $transition->getTo()];
 
             Collection::make($states)
                 ->filter(function (State $state) use ($from) {
-                    return $state->key == $from;
+                    return $state->getKey() == $from;
                 })
                 ->ifEmpty(function () use ($transition, $from) {
                     throw ConfigurationException::nonExistingState($transition, $from);
@@ -56,7 +56,7 @@ class Validator
 
             Collection::make($states)
                 ->filter(function (State $state) use ($to) {
-                    return $state->key == $to;
+                    return $state->getKey() == $to;
                 })
                 ->ifEmpty(function () use ($transition, $to) {
                     throw ConfigurationException::nonExistingState($transition, $to);
@@ -64,8 +64,8 @@ class Validator
         }
 
         Collection::make($transitions)
-            ->groupBy(function ($transition) {
-                return $transition->from().' <+> '.$transition->input();
+            ->groupBy(function (Transition $transition) {
+                return $transition->getFrom().' <+> '.$transition->getInput();
             })
             ->filter(function ($transitions) {
                 return $transitions->count() > 1;
@@ -81,7 +81,7 @@ class Validator
     {
         Collection::make($states)
             ->filter(function (State $state) use ($subject) {
-                return $state->key == $subject->getFiniteState();
+                return $state->getKey() == $subject->getFiniteState();
             })
             ->ifEmpty(function () use ($subject) {
                 throw SubjectInInvalidStateException::new($subject->getFiniteState());
@@ -89,8 +89,8 @@ class Validator
 
         Collection::make($transitions)
             ->filter(function (Transition $transition) use ($subject, $input) {
-                return $transition->from() == $subject->getFiniteState()
-                    && $transition->input() == $input;
+                return $transition->getFrom() == $subject->getFiniteState()
+                    && $transition->getInput() == $input;
             })
             ->ifEmpty(function () use ($subject, $input) {
                 throw InvalidInputException::new($subject->getFiniteState(), $input);

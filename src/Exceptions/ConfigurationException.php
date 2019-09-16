@@ -18,7 +18,7 @@ class ConfigurationException extends Exception
     {
         $keys = $initial
             ->map(function (State $state) {
-                return $state->key;
+                return $state->getKey();
             })
             ->implode(', ');
 
@@ -35,9 +35,11 @@ class ConfigurationException extends Exception
         return self::new(
             'There are %s transitions coming out of [%s] with same input [%s]. Specifically: [%s], [%s].',
             $transitions->count(),
-            $transitions->first()->from(),
-            $transitions->first()->input(),
-            ...$transitions->toArray()
+            $transitions->first()->getFrom(),
+            $transitions->first()->getInput(),
+            ...$transitions->map(function (Transition $transition) {
+                return self::transitionToString($transition);
+            })->toArray()
         );
     }
 
@@ -45,7 +47,7 @@ class ConfigurationException extends Exception
     {
         return self::new(
             'Transition [%s] is referring to a non-existing state [%s].',
-            $transition,
+            self::transitionToString($transition),
             $state
         );
     }
@@ -53,5 +55,10 @@ class ConfigurationException extends Exception
     public static function new(...$args)
     {
         return new self(sprintf(...$args));
+    }
+
+    public static function transitionToString(Transition $transition): string
+    {
+        return "{$transition->getFrom()} --({$transition->getInput()})--> {$transition->getTo()}";
     }
 }

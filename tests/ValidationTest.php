@@ -16,10 +16,9 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There must exist a single initial state. None present.');
 
-        (new Graph)
-            ->setStates([
-                State::normal('a'),
-            ]);
+        Graph::make([
+            State::normal('a'),
+        ], []);
     }
 
     /** @test */
@@ -28,11 +27,10 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There must exist a single initial state. Multiple present [a, b].');
 
-        (new Graph)
-            ->setStates([
-                State::initial('a'),
-                State::initial('b'),
-            ]);
+        Graph::make([
+            State::initial('a'),
+            State::initial('b'),
+        ], []);
     }
 
     /** @test */
@@ -41,14 +39,13 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('Every state much have a unique key. Contains duplicate keys [a, b].');
 
-        (new Graph)
-            ->setStates([
-                State::initial('a'),
-                State::normal('a'),
-                State::normal('b'),
-                State::normal('b'),
-                State::normal('c'),
-            ]);
+        Graph::make([
+            State::initial('a'),
+            State::normal('a'),
+            State::normal('b'),
+            State::normal('b'),
+            State::normal('c'),
+        ], []);
     }
 
     /** @test */
@@ -57,10 +54,11 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('Transition [non-existing --(a)--> foo] is referring to a non-existing state [non-existing].');
 
-        (new Graph)
-            ->setTransitions([
-                Transition::new('non-existing', 'foo', 'a'),
-            ]);
+        Graph::make([
+            State::initial('bar'),
+        ], [
+            Transition::make('non-existing', 'foo', 'a'),
+        ]);
     }
 
     /** @test */
@@ -69,13 +67,11 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('Transition [foo --(a)--> non-existing] is referring to a non-existing state [non-existing].');
 
-        (new Graph)
-            ->setStates([
-                State::initial('foo'),
-            ])
-            ->setTransitions([
-                Transition::new('foo', 'non-existing', 'a'),
-            ]);
+        Graph::make([
+            State::initial('foo'),
+        ], [
+            Transition::make('foo', 'non-existing', 'a'),
+        ]);
     }
 
     /** @test */
@@ -84,15 +80,13 @@ class ValidationTest extends TestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('There are 2 transitions coming out of [new] with same input [a]. Specifically: [new --(a)--> foo], [new --(a)--> bar].');
 
-        (new Graph)
-            ->setStates([
-                State::initial('new'),
-                State::normal('foo'),
-                State::normal('bar'),
-            ])
-            ->setTransitions([
-                Transition::new('new', 'foo', 'a'),
-                Transition::new('new', 'bar', 'a'),
-            ]);
+        Graph::make([
+            State::initial('new'),
+            State::normal('foo'),
+            State::normal('bar'),
+        ], [
+            Transition::make('new', 'foo', 'a'),
+            Transition::make('new', 'bar', 'a'),
+        ]);
     }
 }

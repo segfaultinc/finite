@@ -14,21 +14,24 @@ class Graph
     protected $transitions = [];
 
     /** @var array */
-    private $hooks = [
+    protected $hooks = [
         'applied'  => [],
         'applying' => [],
     ];
 
     /**
-     * Set states for the graph.
+     * Create new instance.
      */
-    public function setStates(array $states): self
+    protected function __construct(array $states, array $transitions)
     {
         $this->states = Validator::states(
             Collection::make($states)->flatten()->toArray()
         );
 
-        return $this;
+        $this->transitions = Validator::transitions(
+            Collection::make($transitions)->flatten()->toArray(),
+            $this->states
+        );
     }
 
     /**
@@ -46,24 +49,11 @@ class Graph
     {
         return Collection::make($this->states)
             ->filter(function (State $state) use ($key) {
-                return $state->key == $key;
+                return $state->getKey() == $key;
             })
             ->firstOr(function () use ($key) {
                 throw Exceptions\InvalidStateException::new($key);
             });
-    }
-
-    /**
-     * Set transition for the graph.
-     */
-    public function setTransitions(array $transitions): self
-    {
-        $this->transitions = Validator::transitions(
-            Collection::make($transitions)->flatten()->toArray(),
-            $this->states
-        );
-
-        return $this;
     }
 
     /**
@@ -81,14 +71,12 @@ class Graph
     {
         $initial = Collection::make($this->states)
             ->filter(function (State $state) {
-                return $state->type == State::INITIAL;
+                return $state->getType() == State::INITIAL;
             })
-            ->firstOr(function () {
-                throw Exceptions\NoInitialStateException::new();
-            });
+            ->first();
 
         $initial->executeEnteringHooks($subject);
-        $subject->setFiniteState($initial->key);
+        $subject->setFiniteState($initial->getKey());
         $initial->executeEnteredHooks($subject);
     }
 
@@ -100,21 +88,21 @@ class Graph
         Validator::subject($this->states, $this->transitions, $subject, $input);
 
         $transition = Collection::make($this->transitions)
-            ->filter(function ($transition) use ($subject, $input) {
-                return $transition->from() == $subject->getFiniteState()
-                    && $transition->input() == $input;
+            ->filter(function (Transition $transition) use ($subject, $input) {
+                return $transition->getFrom() == $subject->getFiniteState()
+                    && $transition->getInput() == $input;
             })
             ->first();
 
-        $from = $this->getState($transition->from());
-        $to = $this->getState($transition->to());
+        $from = $this->getState($transition->getFrom());
+        $to = $this->getState($transition->getTo());
 
         $to->executeEnteringHooks($subject);
         $from->executeLeavingHooks($subject);
         $this->executeApplyingHooks($subject, $from, $to, $transition);
         $transition->executePreHooks($subject);
 
-        $subject->setFiniteState($to->key);
+        $subject->setFiniteState($to->getKey());
 
         $transition->executePostHooks($subject);
         $this->executeAppliedHooks($subject, $from, $to, $transition);
@@ -164,5 +152,10 @@ class Graph
         }
 
         return $this;
+    }
+
+    public static function make(array $states, array $transitions): self
+    {
+        return new self($states, $transitions);
     }
 }

@@ -32,7 +32,7 @@ class Transition
     /**
      * Get the "from" state.
      */
-    public function from(): string
+    public function getFrom(): string
     {
         return $this->from;
     }
@@ -40,7 +40,7 @@ class Transition
     /**
      * Get the "to" state.
      */
-    public function to(): string
+    public function getTo(): string
     {
         return $this->to;
     }
@@ -48,7 +48,7 @@ class Transition
     /**
      * Get the "input", on which the transition happens.
      */
-    public function input(): string
+    public function getInput(): string
     {
         return $this->input;
     }
@@ -95,17 +95,9 @@ class Transition
     }
 
     /**
-     * Return a string representation of the transition.
-     */
-    public function __toString(): string
-    {
-        return "{$this->from} --({$this->input})--> {$this->to}";
-    }
-
-    /**
      * Create new transition.
      */
-    public static function new(string $from, string $to, string $input): self
+    public static function make(string $from, string $to, string $input): self
     {
         return new self($from, $to, $input);
     }

@@ -13,12 +13,11 @@ class GraphTest extends TestCase
     /** @test */
     public function can_register_states()
     {
-        $machine = (new Graph)
-            ->setStates([
-                $init = State::initial('init'),
-                $work = State::normal('work'),
-                $done = State::final('done'),
-            ]);
+        $machine = Graph::make([
+            $init = State::initial('init'),
+            $work = State::normal('work'),
+            $done = State::final('done'),
+        ], []);
 
         $this->assertCount(3, $machine->getStates());
         $this->assertSame($init, $machine->getStates()[0]);
@@ -29,10 +28,9 @@ class GraphTest extends TestCase
     /** @test */
     public function it_finds_state_by_key()
     {
-        $finite = (new Graph)
-            ->setStates([
-                $init = State::initial('init'),
-            ]);
+        $finite = Graph::make([
+            $init = State::initial('init'),
+        ], []);
 
         $this->assertSame($init, $finite->getState('init'));
     }
@@ -42,7 +40,9 @@ class GraphTest extends TestCase
     {
         $this->expectException(InvalidStateException::class);
 
-        $finite = (new Graph);
+        $finite = Graph::make([
+            State::initial('foo'),
+        ], []);
 
         $finite->getState('NON-EXISTING');
     }
@@ -50,16 +50,14 @@ class GraphTest extends TestCase
     /** @test */
     public function can_register_transitions()
     {
-        $machine = (new Graph)
-            ->setStates([
-                State::initial('a'),
-                State::normal('b'),
-                State::final('c'),
-            ])
-            ->setTransitions([
-                $one = Transition::new('a', 'b', 'x'),
-                $two = Transition::new('b', 'c', 'x'),
-            ]);
+        $machine = Graph::make([
+            State::initial('a'),
+            State::normal('b'),
+            State::final('c'),
+        ], [
+            $one = Transition::make('a', 'b', 'x'),
+            $two = Transition::make('b', 'c', 'x'),
+        ]);
 
         $this->assertCount(2, $machine->getTransitions());
         $this->assertSame($one, $machine->getTransitions()[0]);
@@ -90,26 +88,24 @@ class GraphTest extends TestCase
      */
     public function can_register_states_and_transitions_using_nested_arrays()
     {
-        $machine = (new Graph)
-            ->setStates([
-                $init = State::initial('init'),
+        $machine = Graph::make([
+            $init = State::initial('init'),
 
-                [
-                    $foo = State::normal('foo'),
-                    $bar = State::normal('bar'),
-                ],
+            [
+                $foo = State::normal('foo'),
+                $bar = State::normal('bar'),
+            ],
 
-                $done = State::final('done'),
-            ])
-            ->setTransitions([
-                $x = Transition::new('init', 'foo', 'x'),
+            $done = State::final('done'),
+        ], [
+            $x = Transition::make('init', 'foo', 'x'),
 
-                [
-                    $y = Transition::new('foo', 'bar', 'y'),
-                ],
+            [
+                $y = Transition::make('foo', 'bar', 'y'),
+            ],
 
-                $z = Transition::new('bar', 'done', 'z'),
-            ]);
+            $z = Transition::make('bar', 'done', 'z'),
+        ]);
 
         $this->assertCount(4, $machine->getStates());
         $this->assertSame($init, $machine->getStates()[0]);

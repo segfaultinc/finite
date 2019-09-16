@@ -2,6 +2,7 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Hooks;
 use SegfaultInc\Finite\Support\Validator;
 use SegfaultInc\Finite\Support\Collection;
 
@@ -13,11 +14,8 @@ class Graph
     /** @var array */
     protected $transitions = [];
 
-    /** @var array */
-    protected $hooks = [
-        'applied'  => [],
-        'applying' => [],
-    ];
+    /** @var \SegfaultInc\Finite\Support\Hooks */
+    protected $hooks;
 
     /**
      * Create new instance.
@@ -32,6 +30,8 @@ class Graph
             Collection::make($transitions)->flatten()->toArray(),
             $this->states
         );
+
+        $this->hooks = new Hooks;
     }
 
     /**
@@ -75,9 +75,9 @@ class Graph
             })
             ->first();
 
-        $initial->executeEnteringHooks($subject);
+        $initial->getHooks()->execute('entering', $subject);
         $subject->setFiniteState($initial->getKey());
-        $initial->executeEnteredHooks($subject);
+        $initial->getHooks()->execute('entered', $subject);
     }
 
     /**
@@ -97,27 +97,17 @@ class Graph
         $from = $this->getState($transition->getFrom());
         $to = $this->getState($transition->getTo());
 
-        $to->executeEnteringHooks($subject);
-        $from->executeLeavingHooks($subject);
-        $this->executeApplyingHooks($subject, $from, $to, $transition);
-        $transition->executePreHooks($subject);
+        $to->getHooks()->execute('entering', $subject);
+        $from->getHooks()->execute('leaving', $subject);
+        $this->getHooks()->execute('applying', $subject, $from, $to, $transition);
+        $transition->getHooks()->execute('pre', $subject);
 
         $subject->setFiniteState($to->getKey());
 
-        $transition->executePostHooks($subject);
-        $this->executeAppliedHooks($subject, $from, $to, $transition);
-        $from->executeLeftHooks($subject);
-        $to->executeEnteredHooks($subject);
-    }
-
-    /**
-     * Register hooks for "applied" event.
-     */
-    public function applied(callable $hook): self
-    {
-        $this->hooks['applied'][] = $hook;
-
-        return $this;
+        $transition->getHooks()->execute('post', $subject);
+        $this->getHooks()->execute('applied', $subject, $from, $to, $transition);
+        $from->getHooks()->execute('left', $subject);
+        $to->getHooks()->execute('entered', $subject);
     }
 
     /**
@@ -125,33 +115,27 @@ class Graph
      */
     public function applying(callable $hook): self
     {
-        $this->hooks['applying'][] = $hook;
+        $this->hooks->register('applying', $hook);
 
         return $this;
     }
 
     /**
-     * Execute hooks for "applying" event.
+     * Register hooks for "applied" event.
      */
-    public function executeApplyingHooks(Subject $subject, State $from, State $to, Transition $transition): self
+    public function applied(callable $hook): self
     {
-        foreach ($this->hooks['applying'] as $hook) {
-            $hook($subject, $from, $to, $transition);
-        }
+        $this->hooks->register('applied', $hook);
 
         return $this;
     }
 
     /**
-     * Execute hooks for "applied" event.
+     * Get hooks configuration.
      */
-    public function executeAppliedHooks(Subject $subject, State $from, State $to, Transition $transition): self
+    public function getHooks(): Hooks
     {
-        foreach ($this->hooks['applied'] as $hook) {
-            $hook($subject, $from, $to, $transition);
-        }
-
-        return $this;
+        return $this->hooks;
     }
 
     public static function make(array $states, array $transitions): self

@@ -2,6 +2,8 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Hooks;
+
 class State
 {
     const INITIAL = 'INITIAL';
@@ -20,19 +22,16 @@ class State
     /** @var array */
     protected $extra = [];
 
-    /** @var array */
-    protected $hooks = [
-        'entering' => [],
-        'entered'  => [],
-        'leaving'  => [],
-        'left'     => [],
-    ];
+    /** @var \SegfaultInc\Finite\Support\Hooks */
+    protected $hooks;
 
     private function __construct(string $type, string $key, string $label = null)
     {
         $this->key = $key;
         $this->type = $type;
         $this->label = $label ?: $key;
+
+        $this->hooks = new Hooks;
     }
 
     /**
@@ -82,7 +81,7 @@ class State
      */
     public function entering(callable $hook): self
     {
-        $this->hooks['entering'][] = $hook;
+        $this->hooks->register('entering', $hook);
 
         return $this;
     }
@@ -92,7 +91,7 @@ class State
      */
     public function entered(callable $hook): self
     {
-        $this->hooks['entered'][] = $hook;
+        $this->hooks->register('entered', $hook);
 
         return $this;
     }
@@ -102,7 +101,7 @@ class State
      */
     public function leaving(callable $hook): self
     {
-        $this->hooks['leaving'][] = $hook;
+        $this->hooks->register('leaving', $hook);
 
         return $this;
     }
@@ -112,49 +111,17 @@ class State
      */
     public function left(callable $hook): self
     {
-        $this->hooks['left'][] = $hook;
+        $this->hooks->register('left', $hook);
 
         return $this;
     }
 
     /**
-     * Execute hooks when entering this state.
+     * Get hooks configuration.
      */
-    public function executeEnteringHooks(Subject $subject): void
+    public function getHooks(): Hooks
     {
-        foreach ($this->hooks['entering'] as $hook) {
-            $hook($subject);
-        }
-    }
-
-    /**
-     * Execute hooks when after entered this state.
-     */
-    public function executeEnteredHooks(Subject $subject): void
-    {
-        foreach ($this->hooks['entered'] as $hook) {
-            $hook($subject);
-        }
-    }
-
-    /**
-     * Execute hooks when leaving this state.
-     */
-    public function executeLeavingHooks(Subject $subject): void
-    {
-        foreach ($this->hooks['leaving'] as $hook) {
-            $hook($subject);
-        }
-    }
-
-    /**
-     * Execute hooks when after left this state.
-     */
-    public function executeLeftHooks(Subject $subject): void
-    {
-        foreach ($this->hooks['left'] as $hook) {
-            $hook($subject);
-        }
+        return $this->hooks;
     }
 
     /**

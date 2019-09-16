@@ -2,6 +2,8 @@
 
 namespace SegfaultInc\Finite;
 
+use SegfaultInc\Finite\Support\Hooks;
+
 class Transition
 {
     /** @var string */
@@ -13,11 +15,8 @@ class Transition
     /** @var string */
     protected $input;
 
-    /** @var array */
-    protected $hooks = [
-        'pre'  => [],
-        'post' => [],
-    ];
+    /** @var \SegfaultInc\Finite\Support\Hooks */
+    protected $hooks;
 
     /**
      * Create new transition.
@@ -27,6 +26,8 @@ class Transition
         $this->from = $from;
         $this->to = $to;
         $this->input = $input;
+
+        $this->hooks = new Hooks;
     }
 
     /**
@@ -59,7 +60,7 @@ class Transition
      */
     public function pre(callable $hook): self
     {
-        $this->hooks['pre'][] = $hook;
+        $this->hooks->register('pre', $hook);
 
         return $this;
     }
@@ -69,29 +70,17 @@ class Transition
      */
     public function post(callable $hook): self
     {
-        $this->hooks['post'][] = $hook;
+        $this->hooks->register('post', $hook);
 
         return $this;
     }
 
     /**
-     * Execute pre-hooks.
+     * Get hooks configuration.
      */
-    public function executePreHooks(Subject $subject): void
+    public function getHooks(): Hooks
     {
-        foreach ($this->hooks['pre'] as $hook) {
-            $hook($subject);
-        }
-    }
-
-    /**
-     * Execute post-hooks.
-     */
-    public function executePostHooks(Subject $subject): void
-    {
-        foreach ($this->hooks['post'] as $hook) {
-            $hook($subject);
-        }
+        return $this->hooks;
     }
 
     /**

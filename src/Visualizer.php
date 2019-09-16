@@ -8,6 +8,14 @@ use SegfaultInc\Finite\Support\Collection;
 
 class Visualizer
 {
+    /** @var \Graphp\GraphViz\GraphViz */
+    private $renderer;
+
+    public function __construct()
+    {
+        $this->renderer = new GraphViz;
+    }
+
     public function visualize(Graph $finite): void
     {
         $graph = new VisualGraph;
@@ -34,6 +42,16 @@ class Visualizer
                 $edge->setAttribute('graphviz.label', $transition->getInput());
             });
 
-        (new GraphViz)->display($graph);
+        $this->renderer->display($graph);
+    }
+
+    /**
+     * Used for testing.
+     */
+    public function withMockRenderer($renderer): self
+    {
+        $this->renderer = $renderer;
+
+        return $this;
     }
 }

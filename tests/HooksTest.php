@@ -78,7 +78,7 @@ class HooksTest extends TestCase
     }
 
     /** @test */
-    public function hooks_are_executed_in_correct_order()
+    public function pre_and_post_hooks_are_executed_in_correct_order()
     {
         $results = [];
 

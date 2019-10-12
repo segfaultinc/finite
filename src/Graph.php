@@ -97,17 +97,17 @@ class Graph
         $from = $this->getState($transition->getFrom());
         $to = $this->getState($transition->getTo());
 
-        $to->getHooks()->execute('entering', $subject);
-        $from->getHooks()->execute('leaving', $subject);
         $this->getHooks()->execute('applying', $subject, $from, $to, $transition);
+        $from->getHooks()->execute('leaving', $subject);
         $transition->getHooks()->execute('pre', $subject);
+        $to->getHooks()->execute('entering', $subject);
 
         $subject->setFiniteState($to->getKey());
 
-        $transition->getHooks()->execute('post', $subject);
-        $this->getHooks()->execute('applied', $subject, $from, $to, $transition);
-        $from->getHooks()->execute('left', $subject);
         $to->getHooks()->execute('entered', $subject);
+        $transition->getHooks()->execute('post', $subject);
+        $from->getHooks()->execute('left', $subject);
+        $this->getHooks()->execute('applied', $subject, $from, $to, $transition);
     }
 
     /**

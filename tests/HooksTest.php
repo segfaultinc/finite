@@ -400,6 +400,38 @@ class HooksTest extends TestCase
     }
 
     /** @test */
+    public function hooks_are_executed_in_fixed_order()
+    {
+        $events = ['applying', 'leaving', 'pre', 'entering', 'entered', 'post', 'left', 'applied'];
+
+        $results = [];
+
+        [$applying, $leaving, $pre, $entering, $entered, $post, $left, $applied] = array_map(function (string $event) use (&$results) {
+            return M::spy(function () use (&$results, $event) {
+                $results[] = $event;
+            });
+        }, $events);
+
+        $finite = Graph::make([
+            State::initial('new')
+                ->leaving($leaving)
+                ->left($left),
+
+            State::normal('foo')
+                ->entering($entering)
+                ->entered($entered),
+        ], [
+            Transition::make('new', 'foo', 'a')
+                ->pre($pre)
+                ->post($post),
+        ])->applying($applying)->applied($applied);
+
+        $finite->apply(new Subject('new'), 'a');
+
+        $this->assertEquals($events, $results);
+    }
+
+    /** @test */
     public function objects_with_hooks_can_be_serialized()
     {
         $this->expectException('Exception');
